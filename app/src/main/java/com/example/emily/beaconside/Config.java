@@ -12,19 +12,21 @@ public class Config{
     public static final String URL_GET_EMP = "http://140.117.71.114/employee/getEmp.php?id=";
     public static final String URL_UPDATE_EMP = "http://140.117.71.114/employee/updateEmp.php";
     public static final String URL_DELETE_EMP = "http://140.117.71.114/employee/deleteEmp.php?id=";
+    public static final String URL_GET_BEACON_DATABASE = "http://140.117.71.114/beacon/getBeaconDatabase.php";
     public static final String URL_GET_ALL_BEACON = "http://140.117.71.114/beacon/getAllBeacon.php?uEmail=";
     public static final String URL_GET_BEACON = "http://140.117.71.114/beacon/getBeacon.php?macAddress=";
     public static final String URL_GET_BEACON_EVENT = "http://140.117.71.114/beacon/getBeaconCategory.php?macAddress=";
     public static final String URL_GET_BEACON_GROUP = "http://140.117.71.114/beacon/getBeaconGroup.php?macAddress=";
     public static final String URL_GET_NOTICE = "http://140.117.71.114/beacon/getNotice.php?macAddress=";
     public static final String URL_ADD_BEACON="http://140.117.71.114/beacon/addBeacon.php";
+    public static final String URL_GET_USER_DATABASE = "http://140.117.71.114/beacon/getUserDatabase.php";
     public static final String URL_GET_USER_EVENT="http://140.117.71.114/beacon/getUserCategory.php?uEmail=";
     public static final String URL_GET_USER_GROUP="http://140.117.71.114/beacon/getUserGroup.php?uEmail=";
     public static final String URL_ADD_USER = "http://140.117.71.114/beacon/addUser.php";
     public static final String URL_SEARCH = "http://140.117.71.114/beacon/search.php";
     public static final String URL_UPDATE_BEACON="http://140.117.71.114/beacon/updateBeacon.php";
     public static final String URL_DELETE_BEACON="http://140.117.71.114/beacon/deleteBeacon.php?macAddress=";
-    public static final String URL_CREATE_EVENT="http://140.117.71.114/beacon/createEvent.php";
+    public static final String URL_CREATE_GROUP = "http://140.117.71.114/beacon/createGroup.php";
 
 
     //Keys that will be used to send the request to php scripts

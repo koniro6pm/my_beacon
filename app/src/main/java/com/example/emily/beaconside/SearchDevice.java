@@ -1,10 +1,12 @@
 package com.example.emily.beaconside;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,11 +18,17 @@ import android.widget.Toast;
 
 import com.powenko.ifroglab_bt_lib.*;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+
+import static java.lang.Integer.parseInt;
+
 public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBack{
     //	private EditText editText1;
     private ListView listView1;
-
     private boolean myStatusBT=true, firstOpenBT=true;
     /* 運用library */
     private ifrog mifrog;
@@ -34,7 +42,9 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
     // loading spinner
     private ProgressBar spinner;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
+    //用來接收php檔傳回的json
+    private String JSON_STRING;
+    private ArrayList<String> beacon_list; // 放資料庫所有已被註冊的beacon資料
     /* 若沒有開啟藍芽，預設畫面 */
     String[] testValues= new String[]{	"Beacon1","Beacon2","Beacon3","Beacon4"};
     String[] testValues2= new String[]{	"12","34","56","78"};
@@ -55,6 +65,8 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
         groupName_array = extras.getStringArray("groupName_array");
         groupId_array = extras.getIntArray("groupId_array");
 
+        // 接收資料庫所有已註冊的beacon清單，如果已被註冊就不顯示該beacon
+        getBeaconDatabase();
         /* DeviceList */
         listView1=(ListView) findViewById(R.id.beaconList);   //取得listView1
         /* bluetooth */
@@ -101,12 +113,7 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
             finish();
             return;
         }
-
-
         getStartSearch();
-
-
-
     }
     /*經過了dialog卻還是沒開啟 關掉check*/
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -193,7 +200,15 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
                 break;
             }
         }
-        if(device.getName() != null){
+        boolean isRegistered = false;
+        for (String mac : beacon_list) {
+            if(t_address.equals(mac)){
+//                Toast.makeText(getBaseContext(),device.getName()+" already registered", Toast.LENGTH_SHORT).show();
+                isRegistered = true;
+            }
+        }
+
+        if(device.getName() != null && !isRegistered){
 
             if(t_NewDevice==true){//如果是新的device
                 listView1.setVisibility(View.VISIBLE);
@@ -219,6 +234,55 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
         }else{
             Toast.makeText(getBaseContext(),"Start Search",  Toast.LENGTH_SHORT).show();
         }
+    }
+
+    //取得用戶擁有的beacon
+    private void getBeaconDatabase(){
+        class GetBeacon extends AsyncTask<Void,Void,String> {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                JSON_STRING = s;
+                //將取得的json轉換為array list, 顯示在畫面上
+                readMyBeacon();
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                RequestHandler rh = new RequestHandler();
+                String s = rh.sendGetRequest(Config.URL_GET_BEACON_DATABASE);
+                return s;
+            }
+        }
+        GetBeacon ge = new GetBeacon();
+        ge.execute();
+    }
+
+    //將取得的json轉換為array list, 顯示在畫面上
+    private void readMyBeacon(){
+        JSONObject jsonObject = null;
+
+        try {
+            jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacno()中得到的json
+            JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
+            beacon_list = new ArrayList<>();
+
+            for(int i = 0; i<result.length(); i++){//從頭到尾跑一次array
+                JSONObject jo = result.getJSONObject(i);
+                String macAddress = jo.getString("macAddress");//取得macAddress
+
+                //bName,macAddress各自單獨存成一個array
+                beacon_list.add(macAddress);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.example.emily.beaconside;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -37,12 +39,13 @@ import com.facebook.share.ShareApi;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
 
+import static java.lang.Integer.parseInt;
 
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
 
     CallbackManager callbackManager;
-//    AccessToken accessToken = AccessToken.getCurrentAccessToken();
+    AccessTokenTracker accessTokenTracker;
     AccessToken accessToken;
     private Button btn_add;
     private Button btn_friends;
@@ -51,12 +54,18 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     public static String uEmail;
     public static String uId ;
     public static String uName ;
-
+    private String JSON_STRING;
+    // 放資料庫所有已被註冊的beacon資料
+    private ArrayList<String> user_list;
+    boolean isRegistered = false;   // User是否已經註冊資料庫
+    Button login;
+    Button btn_facebook;
+    // 本機資料
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
 
 
         callbackManager = CallbackManager.Factory.create();
@@ -65,58 +74,19 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         btn_friends = (Button) findViewById(R.id.btn_friends);
         btn_friends.setOnClickListener(this);
         accessToken = AccessToken.getCurrentAccessToken();
-
-        if(accessToken!=null){
-            GraphRequest request = GraphRequest.newMeRequest(
-                    accessToken,
-                    new GraphRequest.GraphJSONObjectCallback() {
-                        @Override
-                        public void onCompleted(
-                                JSONObject object,
-                                GraphResponse response) {
-//                            Toast.makeText(Login.this,"Get Token",Toast.LENGTH_SHORT).show();
-                            //讀出姓名、ID、網頁連結
-                            try {
-//                                Toast.makeText(Login.this,"Already Log in",Toast.LENGTH_SHORT).show();
-                                uId=(String) object.get("id");
-                                uName=(String) object.get("name");
-                                uEmail=(String) object.get("email");
-                                /**換頁到Main**/
-                                Intent intent = new Intent();
-                                intent.setClass(Login.this,MainActivity.class);
-                                //傳遞變數
-                                intent.putExtra("uEmail",uEmail);
-                                intent.putExtra("uName",uName);
-                                startActivity(intent);
-//                                finish();
-                                /******/
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                Log.e("Failed","Failed");
-//                                Toast.makeText(Login.this,"Failed",Toast.LENGTH_SHORT).show();
-                            }
-                            // Application code
-                        }
-                    });
-            Bundle parameters = new Bundle();
-            parameters.putString("fields", "id,name,link,email");
-            request.setParameters(parameters);
-            request.executeAsync();
-        }
-
-
+        getUserEvent(); // 取得資料庫裡所有User的Email，存在user_list裡面
+        login = (Button) findViewById(R.id.login);
 /**
  *         FB登入按鈕，要求使用者權限，能要求的有email、friends、profile
  *         未做 : 登入時將資料寫進資料庫
  */
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-        LoginManager.getInstance().logInWithReadPermissions(
-                Login.this,
-                Arrays.asList("email,user_friends"));
 
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                Toast.makeText(Login.this,"I'm clicked",Toast.LENGTH_SHORT).show();
+                accessTokenTracker.startTracking();
                 accessToken = loginResult.getAccessToken();
                 GraphRequest request = GraphRequest.newMeRequest(
                         accessToken,
@@ -124,21 +94,42 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             //當RESPONSE回來的時候
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
+                                Toast.makeText(Login.this,"login button clicked",Toast.LENGTH_SHORT).show();
                                 //讀出姓名、ID、網頁連結
                                 try {
                                     uId=(String) object.get("id");
                                     uName=(String) object.get("name");
                                     uEmail=(String) object.get("email");
-                                    addUser();
-                                    /**換頁到Main**/
-                                    Intent intent = new Intent();
-                                    intent.setClass(Login.this,MainActivity.class);
-                                    //傳遞變數
-                                    intent.putExtra("uEmail",uEmail);
-                                    intent.putExtra("uName",uName);
-                                    startActivity(intent);
-                                    finish();
-                                    /******/
+                                    // 存到本機
+                                    sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+                                    sharedPreferences.edit()
+                                            .putString("NAME", uName)
+                                            .putString("EMAIL", uEmail)
+                                            .putString("ID", uId)
+                                            .commit();
+
+                                    for(String email : user_list){
+//                                        Toast.makeText(Login.this,email,Toast.LENGTH_SHORT).show();
+                                        if(uEmail.equals(email)) {
+                                            isRegistered = true;
+                                        }
+                                    }
+                                    if(!isRegistered) {
+                                        addUser();
+                                        Toast.makeText(Login.this,uEmail+"成功註冊",Toast.LENGTH_SHORT).show();
+                                    }
+                                    else {
+                                        login.setVisibility(View.VISIBLE);
+                                        login.setOnClickListener(new View.OnClickListener() {
+                                            public void onClick(View v) {
+                                                /**換頁到Main**/
+                                                Intent intent = new Intent();
+                                                intent.setClass(Login.this, MainActivity.class);
+                                                startActivity(intent);
+                                                /******/
+                                            }
+                                        });
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -152,12 +143,41 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             }
             @Override
             public void onCancel() {
-
+                Toast.makeText(Login.this,uEmail+"取消",Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onError(FacebookException error) {
+                Toast.makeText(Login.this,uEmail+"錯誤",Toast.LENGTH_SHORT).show();
             }
         });
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken,
+                                                       AccessToken currentAccessToken) {
+                if (currentAccessToken == null) {
+                    accessToken = null;
+                    Toast.makeText(Login.this,"accesstoken: null",Toast.LENGTH_SHORT).show();
+                    final ProgressDialog loading = ProgressDialog.show(Login.this,"Log out...","Wait...",false,false);
+                    new Thread(new Runnable(){
+                        @Override
+                        public void run() {
+                            try{
+                                Thread.sleep(2000);
+                            }
+                            catch(Exception e){
+                                e.printStackTrace();
+                            }
+                            finally{
+                                loading.dismiss();
+                            }
+                        }
+                    }).start();
+                    login.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        };
 /**
  *   HTTP Request取得資料
  */
@@ -169,6 +189,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         super.onResume();
         callbackManager = CallbackManager.Factory.create();
         FacebookSdk.sdkInitialize(getApplicationContext());
+        accessToken = AccessToken.getCurrentAccessToken();
+        getUserEvent(); // 取得資料庫裡所有User的Email，存在user_list裡面
         if(accessToken!=null){
             GraphRequest request = GraphRequest.newMeRequest(
                     accessToken,
@@ -184,15 +206,37 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                                 uId=(String) object.get("id");
                                 uName=(String) object.get("name");
                                 uEmail=(String) object.get("email");
-                                /**換頁到Main**/
-                                Intent intent = new Intent();
-                                intent.setClass(Login.this,MainActivity.class);
-                                //傳遞變數
-                                intent.putExtra("uEmail",uEmail);
-                                intent.putExtra("uName",uName);
-                                startActivity(intent);
-//                                finish();
-                                /******/
+                                sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+                                sharedPreferences.edit()
+                                        .putString("NAME", uName)
+                                        .putString("EMAIL", uEmail)
+                                        .putString("ID", uId)
+                                        .commit();
+                                for(String email : user_list){
+//                                    Toast.makeText(Login.this,email,Toast.LENGTH_SHORT).show();
+                                    if(uEmail.equals(email)) {
+                                        isRegistered = true;
+                                    }
+                                }
+                                if(!isRegistered) {
+                                    addUser();
+                                    Toast.makeText(Login.this,uEmail+"成功註冊",Toast.LENGTH_SHORT).show();
+                                }
+                                login.setText("以"+uName+"的身份繼續使用");
+                                login.setVisibility(View.VISIBLE);
+                                login.setOnClickListener(new View.OnClickListener(){
+                                    public void onClick(View v){
+                                        /**換頁到Main**/
+                                        Intent intent = new Intent();
+                                        intent.setClass(Login.this, MainActivity.class);
+                                        //傳遞變數
+//                                        intent.putExtra("uEmail",uEmail);
+//                                        intent.putExtra("uName",uName);
+                                        startActivity(intent);
+//                                        finish();
+                                        /******/
+                                    }
+                                });
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 Log.e("Failed","Failed");
@@ -208,7 +252,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-/**
+    /**
      *  分享到user塗鴉牆，需另外要求權限，未使用dialog方塊
      */
     private void publishImage(){
@@ -235,12 +279,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private void search(){
         class Search extends AsyncTask<Void,Void,String> {
 
-            ProgressDialog loading;
+            //            ProgressDialog loading;
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
 //                loading = ProgressDialog.show(Login.this,"Adding...","Wait...",false,false);
-                loading = ProgressDialog.show(Login.this,"Adding...","Wait...",false,false);
+//                loading = ProgressDialog.show(Login.this,"Adding...","Wait...",false,false);
             }
 
             @Override
@@ -325,6 +369,52 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         AddUser ae = new AddUser();
         ae.execute();
     }
+
+    private void getUserEvent(){
+        class GetBeacon extends AsyncTask<Void,Void,String> {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                JSON_STRING = s;
+                //將取得的json轉換為array list, 顯示在畫面上
+                showUserEvent();
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                RequestHandler rh = new RequestHandler();
+                String s = rh.sendGetRequest(Config.URL_GET_USER_DATABASE);
+                return s;
+            }
+        }
+        GetBeacon ge = new GetBeacon();
+        ge.execute();
+    }
+
+    private void showUserEvent() {
+        JSONObject jsonObject = null;
+
+        try {
+            jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacno()中得到的json
+            JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
+            user_list = new ArrayList<>();
+
+            for(int i = 0; i<result.length(); i++){//從頭到尾跑一次array
+                JSONObject jo = result.getJSONObject(i);
+                String email = jo.getString("uEmail");//取得macAddress
+                user_list.add(email);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private  void friendsList(){
 //        List = (ListView) findViewById(R.id.list);
 //        if(accessToken!=null) {
@@ -387,5 +477,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         if(v == btn_search){
             search();
         }
-    }}
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        accessTokenTracker.stopTracking();
+    }
+}
+
+
 //

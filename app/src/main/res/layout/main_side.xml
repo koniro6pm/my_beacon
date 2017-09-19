@@ -131,31 +131,27 @@
                 android:orientation="vertical"
                 android:weightSum="1">
 
-                <ScrollView
-                    android:id="@+id/sv"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content">
+                <!--<ScrollView-->
+                <!--android:id="@+id/sv"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="match_parent">-->
 
-                    <!--<include-->
-                    <!--layout="@layout/main_class_side"-->
-                    <!--android:id="@+id/id2"-->
-                    <!--android:visibility="visible"/>-->
-                    <include
-                        android:id="@+id/side_group_ls"
-                        layout="@layout/main_group_side"
-                        android:visibility="visible" />
-                </ScrollView>
+                <include
+                    android:id="@+id/side_group_ls"
+                    layout="@layout/main_group_side"
+                    android:visibility="visible" />
+                <!--</ScrollView>-->
 
-                <ScrollView
-                    android:id="@+id/sv2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content">
+                <!--<ScrollView-->
+                <!--android:id="@+id/sv2"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-                    <include
-                        android:id="@+id/side_class_ls"
-                        layout="@layout/main_class_side"
-                        android:visibility="gone" />
-                </ScrollView>
+                <include
+                    android:id="@+id/side_class_ls"
+                    layout="@layout/main_class_side"
+                    android:visibility="gone" />
+                <!--</ScrollView>-->
 
             </LinearLayout>
 

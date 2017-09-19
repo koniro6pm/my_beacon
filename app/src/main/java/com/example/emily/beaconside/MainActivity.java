@@ -7,6 +7,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -57,7 +58,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import static java.lang.Integer.parseInt;
-
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -76,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     BluetoothMethod bluetooth = new BluetoothMethod();
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
+    // 本機資料
+    SharedPreferences sharedPreferences;
     //寫死目前的用戶
     public static String uEmail;
     public static String get_uEmail;
@@ -97,6 +99,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     int[] groupId_array;//儲存group id
     String[] groupName_array;//儲存group name
 
+    /* class main side */
+    ListView group_list;
+    private RelationListView event_list1;
+    private RelationListView event_list2;
+    ArrayList<String> groupName_list;
+    ArrayList<String> eventName_list;
+    ArrayList<String> eventName_list1 = new ArrayList<String>();
+    ArrayList<String> eventName_list2 = new ArrayList<String>();
+    ArrayAdapter<String> adapter_sideList_group;
+    main_side_event_rowdata adapter_sideList_event1;
+    main_side_event_rowdata adapter_sideList_event2;
+
 
     /* long press */
     MergeAdapter mergeAdapter;
@@ -111,25 +125,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // 取得從Login頁面傳來的用戶的FB帳號
-        Intent intent = this.getIntent();
 
-        uEmail = Login.uEmail;
-        uName = Login.uName;
-        uId = Login.uId;
-//        uEmail = "jennifer1024@livemail.tw";
-//        uName = intent.getStringExtra("uName");
-//        uName = "Cuties";
-
-//        uId = intent.getStringExtra("uId");
-//        if(!intent.getStringExtra("uEmail").equals(""))
-//            uEmail = intent.getStringExtra("uEmail");
+        // 從本機資料取使用者資料
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        uName = sharedPreferences.getString("NAME", "YOO");
+        uEmail = sharedPreferences.getString("EMAIL", "YOO@gmail.com");
+        uId = sharedPreferences.getString("ID", "1234567890");
         get_uEmail = "\""+uEmail+"\"";
-//        get_uEmail = "jennifer1024@livemail.tw";
-//        Toast.makeText(this, uName, Toast.LENGTH_SHORT).show();
-        // 初始化藍牙
-//        bluetooth.BTinit(this);
-//        bluetooth.getStartSearchDevice();
+
         // 設置SwipeView重整
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_main);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -145,6 +148,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         //listview
+
+        /* class main side */
+        group_list = (ListView)findViewById(R.id.group_list);
+        event_list1 = (RelationListView) findViewById(R.id.event_list1);
+        event_list2 = (RelationListView) findViewById(R.id.event_list2);
+        event_list1.setRelatedListView(event_list2);
+        event_list2.setRelatedListView(event_list1);
+
+
 
         mContext = this;
         listView1=(ListView) findViewById(R.id.listView1);
@@ -278,16 +290,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onResume(){
         super.onResume();
-        uEmail = Login.uEmail;
+        // 從本機資料取使用者資料
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        uName = sharedPreferences.getString("NAME", "0");
+        uEmail = sharedPreferences.getString("EMAIL", "0");
+        uId = sharedPreferences.getString("ID", "0");
         get_uEmail = "\""+uEmail+"\"";
-        uName = Login.uName;
-        Toast.makeText(this, uName, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, uName+uEmail+uId, Toast.LENGTH_SHORT).show();
         bluetooth.BTinit(this);
 //        bluetooth.getStartSearchDevice();
         getBeacon();
         getUserEvent();
         getUserGroup();
         bluetooth.getStartMyItemDistance(macAddress_list);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            public void run() {
+//                refresh();
+//            }
+//        }, 3000);
     }
     //取得用戶擁有的beacon
     private void getBeacon(){
@@ -352,11 +373,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else
                     bAlert_list.add(100000);
-//                distance.add("out of range");//distance先寫死
+                distance.add("");//distance先寫死
             }
             //上面的資料讀取完  才設置listview
 //            adapter=new rowdata(this,bName_list,distance,macAddress_list,bPic_list,false);//顯示的方式
-            adapter=new rowdata(getBaseContext(),bName_list,macAddress_list,macAddress_list,bPic_list,false);//顯示的方式
+            adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,false);//顯示的方式
 //            adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,true);//顯示的方式
             mergeAdapter.addAdapter(new ListTitleAdapter(this,adapter));
             mergeAdapter.addAdapter(adapter);
@@ -438,10 +459,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 eventId_array[i] = cId;
                 eventName_array[i] = cName;
+
+                if(eventName_list1.isEmpty() || eventName_list2.isEmpty())
+                    if(i==0 || i%2==0 )//left
+                        eventName_list1.add(cName);
+                    else//right
+                        eventName_list2.add(cName);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        //        Toast.makeText(MainActivity.this, "start"+eventName_list1+" start2:"+eventName_list2, Toast.LENGTH_LONG).show();
+        adapter_sideList_event1 = new main_side_event_rowdata(this,eventName_list1);
+        adapter_sideList_event2 = new main_side_event_rowdata(this,eventName_list2);
+        event_list1.setAdapter(adapter_sideList_event1);
+        event_list2.setAdapter(adapter_sideList_event2);
+
+        event_list1.setRelatedListView(event_list2);/*兩個互相控制*/
+        event_list2.setRelatedListView(event_list1);
 
     }
 
@@ -501,6 +537,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        groupName_list= new ArrayList<>(Arrays.asList(groupName_array));//array to arraylist
+//        Toast.makeText(MainActivity.this, "start"+groupName_list+"end", Toast.LENGTH_LONG).show();
+        adapter_sideList_group = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,groupName_list);
+        group_list.setAdapter(adapter_sideList_group);
 
     }
 
@@ -852,4 +893,3 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return backgroundBmp;
     }
 }
-

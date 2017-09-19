@@ -202,11 +202,11 @@ public class NewEvent extends AppCompatActivity {
                 //params.put(php檔內的接收變數  $_POST["___"] , 要傳給php檔的java變數)
 
                 RequestHandler rh = new RequestHandler();
-                String res = rh.sendPostRequest(Config.URL_CREATE_EVENT, params);
+//                String res = rh.sendPostRequest(Config.URL_CREATE_EVENT, params);
                 //String res = rh.sendPostRequest("php檔的網址", params);
                 //URL_ADD 是在 Config.java設定好的字串 也就是 http://140.117.71.114/employee/addEmp.php
                 //php檔可在ftp上傳下載
-                return res;
+                return "0";
             }
         }
 
