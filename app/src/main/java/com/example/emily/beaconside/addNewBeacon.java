@@ -437,6 +437,11 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                     buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
                 }
                 break;
+            case 3:
+
+                break;
+
+
         }
         /* 透過這些值放入DB */
         //dateFromYear + "-" + dateFromMonth + "-" + dateFromDay
@@ -466,6 +471,12 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                     buttonTimeto.setText(timeToHour + ":" + timeToMin);
                 }
                 break;
+            case 3:
+                //buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
+                //buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                break;
+
+
         }
         /* 透過這些值放入DB */
         //timeFromHour + ":" + timeFromMin
@@ -505,14 +516,13 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
 //                buttonDateto.setClickable(false);
 //                buttonDateto.setClickable(false);
         if (edit) {
-            //抓資料庫裡的data去設定這些的值
-            //timeFromHour + ":" + timeFromMin
-            //timeToHour + ":" + timeToMin
-            //dateFromYear + "-" + dateFromMonth + "-" + dateFromDay
-            //dateToYear + "-" + dateToMonth + "-" + dateToDay
-            //notification_content
             add_notification_check.setText("更新");//原本是"Add notifiaction"
-            //edit = false;//此次編輯結束
+            notification_content.setText(nContent_array.get(0));
+            buttonDatefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
+            buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+            buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
+            buttonTimeto.setText(timeToHour + ":" + timeToMin);
+
         }
 
 
@@ -521,7 +531,12 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 datePickerDialog.setYearRange(1985, 2028);
                 datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
-                dateFlag = 1;
+                if(edit){
+                    dateFlag = 3;
+                }else{
+                    dateFlag = 1;
+                }
+
 //                        buttonDateto.setClickable(true);
             }
         });
@@ -530,7 +545,11 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 datePickerDialog.setYearRange(1985, 2028);
                 datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
-                dateFlag = 2;
+                if(edit){
+                    dateFlag = 3;
+                }else{
+                    dateFlag = 2;
+                }
 
             }
         });
@@ -539,18 +558,27 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
 //                        buttonTimeto.setClickable(true);
-                timeFlag = 1;
+                if(edit){
+                    timeFlag = 3;
+                }else{
+                    timeFlag = 1;
+                }
             }
         });
         buttonTimeto.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
-                timeFlag = 2;
+                if(edit){
+                    timeFlag = 3;
+                }else{
+                    timeFlag = 2;
+                }
             }
         });
 
 
+        //按下dialog的新增 或 更新 後
         //set first dialog
         add_notification_check.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -606,14 +634,11 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                     String nStartTime = dateFromYear_s+"-"+dateFromMonth_s+"-"+dateFromDay_s+" "+timeFromHour_s+":"+timeFromMin_s;
                     String nEndTime = dateToYear_s+"-"+dateToMonth_s+"-"+dateToDay_s+" "+timeToHour_s+":"+timeToMin_s;
 
-                    if (edit) {
+
                         nContent_array.set(0,nContent);
                         nStartTime_array.set(0,nStartTime);
                         nEndTime_array.set(0,nEndTime);
-                    } else {
-                        nContent_array.add(nContent);
-                        nStartTime_array.add(nStartTime);
-                        nEndTime_array.add(nEndTime);
+
 
                         //計算constraintLayout應有的高度
                         int x = nContent_array.size();
@@ -622,14 +647,15 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                         //重新設定constraintLayout的高度 listview才不會擠成一團
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
                         constraintLayout4.setLayoutParams(params);
+
+                        //當增加完notification後  把圖示改為edit
                         String uri = "@drawable/" + "edit"; //圖片路徑和名稱
-
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
-
                         add_notification.setImageResource(imageResource);
 
+                        //標示目前狀態為編輯
                         edit = true;
-                    }
+
                 }
 
 
@@ -694,6 +720,10 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                 params.put("macAddress",macAddress);
                 params.put("bContent",bContent);
                 params.put("alertMiles",alertMiles);
+                //params.put("nContent",nContent_array.get(0));
+                //params.put("nStartTime",nContent_array.get(0));
+
+
                 if (switchMode) {
                     //如果switch開
                     params.put("isAlert","1");
