@@ -17,7 +17,7 @@ public class Config{
     public static final String URL_GET_BEACON = "http://140.117.71.114/beacon/getBeacon.php?macAddress=";
     public static final String URL_GET_BEACON_EVENT = "http://140.117.71.114/beacon/getBeaconCategory.php?macAddress=";
     public static final String URL_GET_BEACON_GROUP = "http://140.117.71.114/beacon/getBeaconGroup.php?macAddress=";
-    public static final String URL_GET_NOTICE = "http://140.117.71.114/beacon/getNotice.php?macAddress=";
+    public static final String URL_GET_NOTICE = "http://140.117.71.114/beacon/getBeaconNotice.php?macAddress=";
     public static final String URL_ADD_BEACON="http://140.117.71.114/beacon/addBeacon.php";
     public static final String URL_GET_USER_DATABASE = "http://140.117.71.114/beacon/getUserDatabase.php";
     public static final String URL_GET_USER_EVENT="http://140.117.71.114/beacon/getUserCategory.php?uEmail=";

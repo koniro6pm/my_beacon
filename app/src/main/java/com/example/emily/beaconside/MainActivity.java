@@ -721,7 +721,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //Toast.makeText(getBaseContext(), "不是out of range", Toast.LENGTH_SHORT).show();
 
             }else{
-                Toast.makeText(getBaseContext(), bName_list.get(x)+"是out of range", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getBaseContext(), bName_list.get(x)+"是out of range", Toast.LENGTH_SHORT).show();
 
             }
 

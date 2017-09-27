@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -31,9 +32,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -110,13 +115,32 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
     public int noti_hourOfDay,noti_minute;
     /* time end */
 
-    Button buttonTime,buttonDate;
-    Button buttonAddnotice;
-    TextView datetext;
-    TextView timetext;
+    Button buttonTimeto,buttonDateto;
+    Button buttonTimefrom,buttonDatefrom;
     Button add_notification_check;
+    Button notification_content_button;
+    EditText notification_content;
 
+    boolean edit=false;
+    int dateFlag = 0;//0:not setting, 1:start/from, 2:end/to
+    int timeFlag = 0;//0:not setting, 1:start/from, 2:end/to
+    int dateFromYear, dateFromMonth, dateFromDay;
+    int dateToYear, dateToMonth, dateToDay;
+    int timeFromHour, timeFromMin;
+    int timeToHour, timeToMin;
+    String nStartTime;
+    String nEndTime;
+    String nContent;
     private ListView listView_eventScroll;
+    ListView listViewNotification;
+    NotificationAdapter notificationAdapter;
+    ArrayList<String> nContent_array = new ArrayList<String>();
+    ArrayList<String> nStartTime_array = new ArrayList<String>();
+    ArrayList<String> nEndTime_array = new ArrayList<String>();
+
+    ScrollView sv3;
+    LinearLayout linearLayout4;
+    ConstraintLayout constraintLayout4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +182,13 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
         buttonChangePic = (ImageButton) findViewById(R.id.buttonChangePic);
         buttonChangePic.setOnClickListener(this);
 
+        listViewNotification = (ListView) findViewById(R.id.listViewNotification);
+        registerForContextMenu(listViewNotification);//
+
+        sv3 = (ScrollView) findViewById(R.id.sv3);
+        linearLayout4 = (LinearLayout) findViewById(R.id.linearLayout4);
+        constraintLayout4 = (ConstraintLayout) findViewById(R.id.constraintLayout4);
+
 
         add_event = (ImageButton)findViewById(R.id.add_event);
         add_group = (ImageButton)findViewById(R.id.add_group);
@@ -186,6 +217,7 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
         getBeacon();
         getBeaconEvent();
         getBeaconGroup();
+        getBeaconNotice();
 
         //指定alarmSwitch的click listener  要放在getBeacon後面
         if (alarmSwitch != null) {
@@ -404,29 +436,291 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             }
         });*/
 
-
+        add_notification.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notification_click_claim();
+            }
+        });
     }
 
     /* time */
     @Override
     public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
+        boolean y = false;
+        switch (dateFlag){
+            case 0://nothing happen
+                break;
+            case 1://click start/from button
+                dateFromYear = year; dateFromMonth = month+1; dateFromDay = day;
+                dateToYear = year; dateToMonth = month+1; dateToDay = day+1;/*還有一個防呆機制沒有做，就是+1的時候可能換月*/
+                buttonDatefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
+                buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+                break;
+            case 2://click end/to button
+                if(year >= dateFromYear)
+                    if((month+1) >= dateFromMonth)
+                        if(day>=dateFromDay)
+                            y=true;
+                if(y){//avoid stupid
+                    dateToYear = year; dateToMonth = month+1; dateToDay = day;
+                    buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+                }
+                break;
+            case 3://edit
+                dateFromYear = year; dateFromMonth = month+1; dateFromDay = day;
+                buttonDatefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
+                break;
+            case 4:
+                dateToYear = year; dateToMonth = month+1; dateToDay = day;/*還有一個防呆機制沒有做，就是+1的時候可能換月*/
+                buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+                break;
+
+
+
+
+        }
         /* 透過這些值放入DB */
-        noti_year = year;
-        noti_month = month;
-        noti_day = day;
-        datetext.setText(year + "-" + month + "-" + day);
-//        Toast.makeText(new_item.this, "new date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
+        //dateFromYear + "-" + dateFromMonth + "-" + dateFromDay
+        //dateToYear + "-" + dateToMonth + "-" + dateToDay
+
+//        Toast.makeText(addNewBeacon.this, "new date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
+        boolean y = false;
+        switch (timeFlag){
+            case 0://nothing happen
+                break;
+            case 1://click start/from button
+                timeFromHour = hourOfDay; timeFromMin = minute;
+                timeToHour = hourOfDay+1; timeToMin = minute;/*還有一個防呆機制沒有做，就是+1的時候可能換日*/
+                buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
+                buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                break;
+            case 2://click end/to button
+                if(hourOfDay >= timeFromHour)
+                    if(minute>=timeFromMin)
+                        y=true;
+                if(y){
+                    timeToHour = hourOfDay; timeToMin = minute;
+                    buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                }
+                break;
+            case 3:
+                timeFromHour = hourOfDay; timeFromMin = minute;
+                buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
+                break;
+            case 4:
+                timeToHour = hourOfDay; timeToMin = minute;/*還有一個防呆機制沒有做，就是+1的時候可能換日*/
+                buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                break;
+
+
+
+
+        }
         /* 透過這些值放入DB */
-        noti_hourOfDay = hourOfDay;
-        noti_minute = minute;
-        timetext.setText(hourOfDay + ":" + minute);
-//        Toast.makeText(new_item.this, "new time:" + hourOfDay + ":" + minute, Toast.LENGTH_LONG).show();
+        //timeFromHour + ":" + timeFromMin
+        //timeToHour + ":" + timeToMin
+
+//        Toast.makeText(addNewBeacon.this, "new time:" + hourOfDay + ":" + minute, Toast.LENGTH_LONG).show();
     }
     /* time end */
+
+
+    /*notification click*/
+    public void notification_click_claim() {
+        final Dialog dialog = new Dialog(editBeacon.this);
+        final Calendar calendar = Calendar.getInstance();
+        final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(editBeacon.this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false);
+        final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(editBeacon.this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false, false);
+        // first dialog
+        dialog.setContentView(R.layout.notification_dialog);
+        buttonDateto = (Button) dialog.findViewById(R.id.buttonDateto);
+        buttonTimeto = (Button) dialog.findViewById(R.id.buttonTimeto);
+        buttonDatefrom = (Button) dialog.findViewById(R.id.buttonDatefrom);
+        buttonTimefrom = (Button) dialog.findViewById(R.id.buttonTimefrom);
+        add_notification_check = (Button) dialog.findViewById(R.id.add_notification_check);
+        notification_content = (EditText) dialog.findViewById(R.id.notification_content);
+
+        //second dialog
+        DatePickerDialog dpd = (DatePickerDialog) getSupportFragmentManager().findFragmentByTag(DATEPICKER_TAG);
+        if (dpd != null) {
+            dpd.setOnDateSetListener(editBeacon.this);
+        }
+        TimePickerDialog tpd = (TimePickerDialog) getSupportFragmentManager().findFragmentByTag(TIMEPICKER_TAG);
+        if (tpd != null) {
+            tpd.setOnTimeSetListener(editBeacon.this);
+        }
+
+
+//                buttonDateto.setClickable(false);
+//                buttonDateto.setClickable(false);
+        if (edit) {
+            add_notification_check.setText("更新");//原本是"Add notifiaction"
+            notification_content.setText(nContent_array.get(0));
+            buttonDatefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
+            buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+            buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
+            buttonTimeto.setText(timeToHour + ":" + timeToMin);
+
+        }
+
+
+        buttonDatefrom.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.setYearRange(1985, 2028);
+                datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
+                if(edit){
+                    dateFlag = 3;
+                }else{
+                    dateFlag = 1;
+                }
+
+//                        buttonDateto.setClickable(true);
+            }
+        });
+        buttonDateto.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.setYearRange(1985, 2028);
+                datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
+                if(edit){
+                    dateFlag = 4;
+                }else{
+                    dateFlag = 2;
+                }
+
+            }
+        });
+        buttonTimefrom.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
+//                        buttonTimeto.setClickable(true);
+                if(edit){
+                    timeFlag = 3;
+                }else{
+                    timeFlag = 1;
+                }
+            }
+        });
+        buttonTimeto.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
+                if(edit){
+                    timeFlag = 4;
+                }else{
+                    timeFlag = 2;
+                }
+            }
+        });
+
+
+        //按下dialog的新增 或 更新 後
+        //set first dialog
+        add_notification_check.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //String content = notification_content.getText().toString();
+                /*if(dateFlag!=0 && timeFlag!=0 && content!=null){
+                    notification_content_button.setText(content+"\n\n"+
+                            dateFromYear+"/"+dateFromMonth+"/"+dateFromDay+" ~ "+dateToYear+"/"+dateToMonth+"/"+dateToDay+"\n"+
+                            timeFromHour+":"+timeFromMin+" ~ "+timeToHour+":"+timeToMin);
+
+                }*/
+                if(dateFlag!=0 && timeFlag!=0) {
+                    nContent = notification_content.getText().toString();
+
+                    String dateFromYear_s = Integer.toString(dateFromYear);
+                    String dateFromMonth_s = Integer.toString(dateFromMonth);
+                    String dateFromDay_s = Integer.toString(dateFromDay);
+                    String timeFromHour_s = Integer.toString(timeFromHour);
+                    String timeFromMin_s = Integer.toString(timeFromMin);
+                    String dateToYear_s = Integer.toString(dateToYear);
+                    String dateToMonth_s = Integer.toString(dateToMonth);
+                    String dateToDay_s = Integer.toString(dateToDay);
+                    String timeToHour_s = Integer.toString(timeToHour);
+                    String timeToMin_s = Integer.toString(timeToMin);
+
+                    //檢查如果只有個位數的話 加上"0" 變為二位數 符合datetime格式
+                    if(dateFromMonth < 10){
+                        dateFromMonth_s = "0" + dateFromMonth;
+                    }
+                    if(dateFromDay < 10){
+                        dateFromDay_s = "0" + dateFromDay;
+                    }
+                    if(timeFromHour < 10){
+                        timeFromHour_s = "0" + timeFromHour;
+                    }
+                    if(timeFromMin < 10){
+                        timeFromMin_s = "0" + timeFromMin;
+                    }
+                    if(dateToMonth < 10){
+                        dateToMonth_s = "0" + dateToMonth;
+                    }
+                    if(dateToDay < 10){
+                        dateToDay_s = "0" + dateToDay;
+                    }
+                    if(timeToHour < 10){
+                        timeToHour_s = "0" + timeToHour;
+                    }
+                    if(timeToMin < 10){
+                        timeToMin_s = "0" + timeToMin;
+                    }
+
+
+                    nStartTime = dateFromYear_s+"-"+dateFromMonth_s+"-"+dateFromDay_s+" "+timeFromHour_s+":"+timeFromMin_s;
+                    nEndTime = dateToYear_s+"-"+dateToMonth_s+"-"+dateToDay_s+" "+timeToHour_s+":"+timeToMin_s;
+
+                    //先寫成只能加一個notice 加完第一個後便會變編輯按鈕 而不是增加按鈕
+                    //但不確定之後會不會改成多個notice 所以還是保留這些arraylist
+                    if (edit) {
+                        nContent_array.set(0,nContent);
+                        nStartTime_array.set(0,nStartTime);
+                        nEndTime_array.set(0,nEndTime);
+                    } else {
+                        nContent_array.add(0, nContent);
+                        nStartTime_array.add(0, nStartTime);
+                        nEndTime_array.add(0, nEndTime);
+                    }
+                    //計算constraintLayout應有的高度
+                    int x = nContent_array.size();
+                    int height = 150 + 240*x;
+
+                    //重新設定constraintLayout的高度 listview才不會擠成一團
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+                    constraintLayout4.setLayoutParams(params);
+
+                    //當增加完notification後  把圖示改為edit
+                    String uri = "@drawable/" + "edit"; //圖片路徑和名稱
+                    int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
+                    add_notification.setImageResource(imageResource);
+
+                    //標示目前狀態為編輯
+                    edit = true;
+                }
+
+
+
+                notificationAdapter=new NotificationAdapter(getBaseContext(),nContent_array,nStartTime_array,nEndTime_array);//顯示的方式
+                listViewNotification.setAdapter(notificationAdapter);
+
+
+                dialog.dismiss();
+
+            }
+        });
+
+
+
+        dialog.show();
+
+    }
 
     private void getBeacon(){
         class GetBeacon extends AsyncTask<Void,Void,String> {
@@ -643,6 +937,135 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
 
     }
 
+
+    private void getBeaconNotice(){
+        class GetBeacon extends AsyncTask<Void,Void,String> {
+            ProgressDialog loading;
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                loading = ProgressDialog.show(editBeacon.this,"Fetching...","Wait...",false,false);
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                loading.dismiss();
+                JSON_STRING = s;
+                //Toast.makeText(editBeacon.this,s,Toast.LENGTH_LONG).show();
+                //將取得的json轉換為array list, 顯示在畫面上
+                if(JSON_STRING.isEmpty()){
+                    //沒有notice 編輯模式false
+                    edit = false;
+
+                }else{
+                    //有notcie 編輯模式true
+                    edit = true;
+                    showBeaconNotice();
+
+                }
+
+
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                RequestHandler rh = new RequestHandler();
+                String s = rh.sendGetRequestParam(Config.URL_GET_NOTICE,"\""+macAddress+"\"");
+                return s;
+            }
+        }
+        GetBeacon ge = new GetBeacon();
+        ge.execute();
+    }
+
+    private void showBeaconNotice() {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacon()中得到的json
+            JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
+
+            for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
+                JSONObject jo = result.getJSONObject(i);
+                int nId = jo.getInt("nId");
+                nStartTime = jo.getString("nStartTime");
+                nEndTime = jo.getString("nEndTime");
+                nContent = jo.getString("nContent");
+
+                DateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm");//設定datetime格式 去掉後面的:00(:ss)
+                DateFormat year = new SimpleDateFormat("yyyy");
+                DateFormat month = new SimpleDateFormat("MM");
+                DateFormat date = new SimpleDateFormat("dd");
+                DateFormat hour = new SimpleDateFormat("HH");
+                DateFormat min = new SimpleDateFormat("mm");
+
+                //先將資料庫裡的string轉為datetime格式的date物件
+                Date start = datetime.parse(nStartTime);
+                Date end = datetime.parse(nEndTime);
+                nStartTime = datetime.format(start);
+                nEndTime = datetime.format(end);
+
+                /****convert nStartTime*****/
+                dateFromYear = Integer.parseInt(year.format(start));
+                //將date物件的start 以year格式取得yyyy 再從string轉為int
+                dateFromMonth = Integer.parseInt(month.format(start));
+                dateFromDay = Integer.parseInt(date.format(start));
+                timeFromHour = Integer.parseInt(hour.format(start));
+                timeFromMin = Integer.parseInt(min.format(start));
+
+                /****convert nEndTime*****/
+                dateToYear = Integer.parseInt(year.format(end));
+                //將date物件的start 以year格式取得yyyy 再從string轉為int
+                dateToMonth = Integer.parseInt(month.format(end));
+                dateToDay = Integer.parseInt(date.format(end));
+                timeToHour = Integer.parseInt(hour.format(end));
+                timeToMin = Integer.parseInt(min.format(end));
+
+
+
+                //nStartTime = dateFromYear+"-"+dateFromMonth+"-"+dateFromDay+" "+timeFromHour+":"+timeFromMin;
+                //nEndTime = dateToYear+"-"+dateToMonth+"-"+dateToDay+" "+timeToHour+":"+timeToMin;
+
+                //設定卡片
+                nContent_array.add(0, nContent);
+                nStartTime_array.add(0,nStartTime);
+                nEndTime_array.add(0, nEndTime);
+
+                //計算constraintLayout應有的高度
+                int x = nContent_array.size();
+                int height = 150 + 240*x;
+
+                //重新設定constraintLayout的高度 listview才不會擠成一團
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+                constraintLayout4.setLayoutParams(params);
+
+                //當增加完notification後  把圖示改為edit
+                String uri = "@drawable/" + "edit"; //圖片路徑和名稱
+                int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
+                add_notification.setImageResource(imageResource);
+
+                //標示目前狀態為編輯
+                edit = true;
+
+                notificationAdapter=new NotificationAdapter(getBaseContext(),nContent_array,nStartTime_array,nEndTime_array);//顯示的方式
+                listViewNotification.setAdapter(notificationAdapter);
+
+
+            }
+
+
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     private void updateBeacon(){
 
         final String bName = editTextbName.getText().toString().trim();
@@ -710,6 +1133,10 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                 hashMap.put("eventId_add",eventId_add.toString());
                 hashMap.put("groupId_delete",groupId_delete.toString());
                 hashMap.put("groupId_add",groupId_add.toString());
+
+                hashMap.put("nContent",nContent_array.get(0));
+                hashMap.put("nStartTime",nStartTime_array.get(0));
+                hashMap.put("nEndTime",nEndTime_array.get(0));
 
 
                 RequestHandler rh = new RequestHandler();

@@ -410,8 +410,6 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
         });
 
 
-
-
     }
 
     /* time */
@@ -437,9 +435,16 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                     buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
                 }
                 break;
-            case 3:
-
+            case 3://edit
+                dateFromYear = year; dateFromMonth = month+1; dateFromDay = day;
+                buttonDatefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
                 break;
+            case 4:
+                dateToYear = year; dateToMonth = month+1; dateToDay = day;/*還有一個防呆機制沒有做，就是+1的時候可能換月*/
+                buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+                break;
+
+
 
 
         }
@@ -472,9 +477,15 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case 3:
-                //buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
-                //buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                timeFromHour = hourOfDay; timeFromMin = minute;
+                buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
                 break;
+            case 4:
+                timeToHour = hourOfDay; timeToMin = minute;/*還有一個防呆機制沒有做，就是+1的時候可能換日*/
+                buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                break;
+
+
 
 
         }
@@ -546,7 +557,7 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                 datePickerDialog.setYearRange(1985, 2028);
                 datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
                 if(edit){
-                    dateFlag = 3;
+                    dateFlag = 4;
                 }else{
                     dateFlag = 2;
                 }
@@ -570,7 +581,7 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
                 if(edit){
-                    timeFlag = 3;
+                    timeFlag = 4;
                 }else{
                     timeFlag = 2;
                 }
@@ -634,12 +645,17 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                     String nStartTime = dateFromYear_s+"-"+dateFromMonth_s+"-"+dateFromDay_s+" "+timeFromHour_s+":"+timeFromMin_s;
                     String nEndTime = dateToYear_s+"-"+dateToMonth_s+"-"+dateToDay_s+" "+timeToHour_s+":"+timeToMin_s;
 
-
+                    //先寫成只能加一個notice 加完第一個後便會變編輯按鈕 而不是增加按鈕
+                    //但不確定之後會不會改成多個notice 所以還是保留這些arraylist
+                    if (edit) {
                         nContent_array.set(0,nContent);
                         nStartTime_array.set(0,nStartTime);
                         nEndTime_array.set(0,nEndTime);
-
-
+                    } else {
+                        nContent_array.add(0, nContent);
+                        nStartTime_array.add(0, nStartTime);
+                        nEndTime_array.add(0, nEndTime);
+                    }
                         //計算constraintLayout應有的高度
                         int x = nContent_array.size();
                         int height = 150 + 240*x;
@@ -655,8 +671,8 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
 
                         //標示目前狀態為編輯
                         edit = true;
+                    }
 
-                }
 
 
                         notificationAdapter=new NotificationAdapter(getBaseContext(),nContent_array,nStartTime_array,nEndTime_array);//顯示的方式
@@ -702,13 +718,11 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 loading.dismiss();
-                //Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
+                Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
 
-                /*Intent intent = new Intent();
+                Intent intent = new Intent();
                 intent.setClass(addNewBeacon.this,MainActivity.class);
-                //傳遞array: event list
-                //intent.putStringArrayListExtra("cName_list",cName_list);
-                startActivity(intent);*/
+                startActivity(intent);
             }
 
             @Override
@@ -720,6 +734,9 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                 params.put("macAddress",macAddress);
                 params.put("bContent",bContent);
                 params.put("alertMiles",alertMiles);
+                params.put("nContent",nContent_array.get(0));
+                params.put("nStartTime",nStartTime_array.get(0));
+                params.put("nEndTime",nEndTime_array.get(0));
                 //params.put("nContent",nContent_array.get(0));
                 //params.put("nStartTime",nContent_array.get(0));
 
