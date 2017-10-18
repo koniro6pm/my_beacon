@@ -17,5 +17,6 @@
 
     <!--item plus content rowdata-->
     <dimen name="list_text">18dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>
 

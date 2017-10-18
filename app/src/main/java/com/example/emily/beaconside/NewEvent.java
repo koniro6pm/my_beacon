@@ -6,9 +6,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -25,11 +29,10 @@ import java.util.HashMap;
 
 public class NewEvent extends AppCompatActivity {
 
-    private Button buttonChangePic;
+    ImageButton buttonChangePic;
     TextView hiword;
-    ImageView imageView_cPic;
-    private Button button_add;
-    EditText edittext_cName;
+    ImageView pic_view;
+    EditText editText_cName;
     String cPic;
     private ListView listview_newEvent;
 
@@ -50,8 +53,13 @@ public class NewEvent extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_event);
+
+        //畫面上方的bar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //接收從main傳過來的資料
         Intent intent = getIntent();
@@ -61,19 +69,10 @@ public class NewEvent extends AppCompatActivity {
         bName_list = intent.getStringArrayListExtra("bName_list");
         bPic_list = intent.getStringArrayListExtra("bPic_list");
 
-        cPic = getIntent().getStringExtra("sayHi");
-       // Toast.makeText(MainActivity.this, "測試" + cPic, Toast.LENGTH_SHORT).show();
-        imageView_cPic = (ImageView) findViewById(R.id.imageView_cPic);
 
+        pic_view = (ImageView) findViewById(R.id.pic_view);
 
-        String uri = "@drawable/" + cPic; //圖片路徑和名稱
-
-        int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
-
-        imageView_cPic.setImageResource(imageResource);
-
-
-        buttonChangePic = (Button) findViewById(R.id.buttonChangePic);
+       buttonChangePic = (ImageButton) findViewById(R.id.buttonChangePic);
 
         //實做OnClickListener界面
         buttonChangePic.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +82,6 @@ public class NewEvent extends AppCompatActivity {
             }
         });
 
-        button_add = (Button) findViewById(R.id.button_add);
 
         //實做OnClickListener界面
         /*button_add.setOnClickListener(new View.OnClickListener() {
@@ -92,33 +90,12 @@ public class NewEvent extends AppCompatActivity {
                 addEvent();
             }
         });*/
-        edittext_cName = (EditText) findViewById(R.id.editText_cName);
+        editText_cName = (EditText) findViewById(R.id.editText_cName);
         listview_newEvent = (ListView) findViewById(R.id.listview_newEvent);
 //        listView.setOnItemClickListener(this);
 
         showBeacon();
 
-        button_add.setOnClickListener(new View.OnClickListener() {
-
-            //          Toast.makeText(NewGroup.this,"On click",Toast.LENGTH_SHORT).show();
-            @Override
-            public void onClick(View v) {
-
-                for(int i=0;i<beaconCheckboxAdapter.mChecked.size();i++){
-                    if(beaconCheckboxAdapter.mChecked.get(i)){
-                        //beaconSelect_list.add((String) beaconCheckboxAdapter.getItem(i));
-                        beaconSelect_string.append((String) beaconCheckboxAdapter.getItem(i)).append(",");
-
-//                                friendId = friendId+","+adapter.getItem(i).toString();
-                    }
-                }
-                addEvent();
-
-            }
-
-
-
-        });
 
 
     }
@@ -147,7 +124,7 @@ public class NewEvent extends AppCompatActivity {
      */
     private void startNextPage() {
         Intent intent = new Intent();
-        intent.setClass(NewEvent.this, ChangePic.class);
+        intent.setClass(NewEvent.this, ChangeGroupPic.class);
         startActivityForResult(intent, resultNum);
     }
 
@@ -163,14 +140,14 @@ public class NewEvent extends AppCompatActivity {
 
                 int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
 
-                imageView_cPic.setImageResource(imageResource);
+                pic_view.setImageResource(imageResource);
 
             }
         }
     }
 
     private void addEvent() {
-        final String cName = edittext_cName.getText().toString().trim();
+        final String cName = editText_cName.getText().toString().trim();
 
         class AddEvent extends AsyncTask<Void,Void,String> {
 
@@ -202,11 +179,11 @@ public class NewEvent extends AppCompatActivity {
                 //params.put(php檔內的接收變數  $_POST["___"] , 要傳給php檔的java變數)
 
                 RequestHandler rh = new RequestHandler();
-//                String res = rh.sendPostRequest(Config.URL_CREATE_EVENT, params);
+                String res = rh.sendPostRequest(Config.URL_CREATE_EVENT, params);
                 //String res = rh.sendPostRequest("php檔的網址", params);
                 //URL_ADD 是在 Config.java設定好的字串 也就是 http://140.117.71.114/employee/addEmp.php
                 //php檔可在ftp上傳下載
-                return "0";
+                return res;
             }
         }
 
@@ -217,6 +194,41 @@ public class NewEvent extends AppCompatActivity {
 
     }
 
+
+    /* check button*/
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.new_item_save, menu);
+        //Toast.makeText(this,"叫出menu", Toast.LENGTH_SHORT).show();
+
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_new_item_check) {
+            //執行新增beacon
+            for(int i=0;i<beaconCheckboxAdapter.mChecked.size();i++){
+                if(beaconCheckboxAdapter.mChecked.get(i)){
+                    //beaconSelect_list.add((String) beaconCheckboxAdapter.getItem(i));
+                    beaconSelect_string.append((String) beaconCheckboxAdapter.getItem(i)).append(",");
+
+//                                friendId = friendId+","+adapter.getItem(i).toString();
+                }
+            }
+            addEvent();
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+    /* check end */
+
 }
-
-

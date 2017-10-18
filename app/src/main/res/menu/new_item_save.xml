@@ -6,7 +6,7 @@
         android:id="@+id/action_new_item_check"
         android:icon="@drawable/ic_action_check"
         android:title="new item"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:orderInCategory="0"/>
 
 </menu>

@@ -1,15 +1,19 @@
 package com.example.emily.beaconside;
-
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,7 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class NewGroup extends AppCompatActivity {
+public class NewGroup extends AppCompatActivity implements View.OnClickListener {
 
     CallbackManager callbackManager;
     AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -37,21 +41,33 @@ public class NewGroup extends AppCompatActivity {
     private ImageView Img;
     private FriendsListAdapter adapter;
     private EditText groupName;
-    private Button confirm;
     public static String uEmail,founderId;
     ArrayList<String> listItemID = new ArrayList<String>();
+    ImageButton buttonChangePic;
+    public static final int resultNum = 0;
+    public String pic = "groupPic_1";
+    ImageView pic_view;
 
     //取不到好友信箱 先寫死
     String friendEmail="emily971133@gmail.com,jennifer1024@livemail.tw,praytears@gmail.com";
     String friendId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
+
+        //畫面上方的bar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         List = (ListView) findViewById(R.id.listView);
         Img  = (ImageView) findViewById(R.id.imageView3);
         groupName = (EditText) findViewById(R.id.newGroupName);
-        confirm = (Button)findViewById(R.id.button5);
+        buttonChangePic = (ImageButton) findViewById(R.id.buttonChangePic);
+        buttonChangePic.setOnClickListener(this);
+        pic_view = (ImageView)findViewById(R.id.pic_view);
+
 
         if(accessToken!=null) {
 
@@ -110,49 +126,6 @@ public class NewGroup extends AppCompatActivity {
 
         }
 
-        confirm.setOnClickListener(new View.OnClickListener() {
-
-            //          Toast.makeText(NewGroup.this,"On click",Toast.LENGTH_SHORT).show();
-            @Override
-            public void onClick(View v) {
-
-                listItemID.clear();
-                friendId=null;
-                for(int i=0;i<adapter.mChecked.size();i++){
-                    if(adapter.mChecked.get(i)){
-                        listItemID.add((String) adapter.getItem(i));
-//                                friendId = friendId+","+adapter.getItem(i).toString();
-                    }
-                }
-                if(listItemID.size()==0){
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(NewGroup.this);
-                    builder1.setMessage("None");
-                    builder1.show();
-                }else{
-                    StringBuilder sb = new StringBuilder();
-
-                    for(int i=0;i<listItemID.size();i++){
-//                                sb.append(listItemID.get(i)+",");
-                        if (i==0)
-                            friendId = listItemID.get(i).toString()+",";
-                        else {
-                            friendId = friendId + listItemID.get(i).toString()+",";
-                        }
-                    }
-                    friendId = friendId.substring(0,friendId.length() - 1);
-                    Toast.makeText( NewGroup.this,friendId,Toast.LENGTH_SHORT).show();
-//                            sb.append(friendId);
-//                            AlertDialog.Builder builder2 = new AlertDialog.Builder(NewGroup.this);
-//                            builder2.setMessage(sb.toString());
-//                            builder2.show();
-                }
-                addGroup();
-
-                Intent backPressedIntent = new Intent();
-                backPressedIntent.setClass(getApplicationContext(), MainActivity.class);
-                startActivity(backPressedIntent);
-            }
-        });
     }
 
 
@@ -209,5 +182,97 @@ public class NewGroup extends AppCompatActivity {
         AddGroup ae = new AddGroup();
         ae.execute();
     }
+
+
+    public void onClick(View v) {
+        if(v == buttonChangePic){
+
+            Intent intent = new Intent();
+            intent.setClass(NewGroup.this, ChangeGroupPic.class);
+            startActivityForResult(intent, resultNum);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            if(requestCode == resultNum){
+                pic = data.getExtras().getString(ChangePic.FLAG);//從changPic得到的值(圖片名稱)
+
+                String uri = "@drawable/" + pic; //圖片路徑和名稱
+
+                int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
+
+                pic_view.setImageResource(imageResource);
+
+            }
+        }
+    }
+
+
+    /* check button*/
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.new_item_save, menu);
+        //Toast.makeText(this,"叫出menu", Toast.LENGTH_SHORT).show();
+        return super.onCreateOptionsMenu(menu);
+        //return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_new_item_check) {
+            //執行新增group
+            /* 切回到原本的畫面 */
+            listItemID.clear();
+            friendId=null;
+            for(int i=0;i<adapter.mChecked.size();i++){
+                if(adapter.mChecked.get(i)){
+                    listItemID.add((String) adapter.getItem(i));
+//                                friendId = friendId+","+adapter.getItem(i).toString();
+                }
+            }
+            if(listItemID.size()==0){
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(NewGroup.this);
+                builder1.setMessage("None");
+                builder1.show();
+            }else{
+                StringBuilder sb = new StringBuilder();
+
+                for(int i=0;i<listItemID.size();i++){
+//                                sb.append(listItemID.get(i)+",");
+                    if (i==0)
+                        friendId = listItemID.get(i).toString()+",";
+                    else {
+                        friendId = friendId + listItemID.get(i).toString()+",";
+                    }
+                }
+                friendId = friendId.substring(0,friendId.length() - 1);
+                Toast.makeText( NewGroup.this,friendId,Toast.LENGTH_SHORT).show();
+//                            sb.append(friendId);
+//                            AlertDialog.Builder builder2 = new AlertDialog.Builder(NewGroup.this);
+//                            builder2.setMessage(sb.toString());
+//                            builder2.show();
+            }
+            addGroup();
+
+            Intent backPressedIntent = new Intent();
+            backPressedIntent.setClass(getApplicationContext(), MainActivity.class);
+            startActivity(backPressedIntent);
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+    /* check end */
 
 }

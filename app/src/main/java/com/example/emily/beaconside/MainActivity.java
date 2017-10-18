@@ -354,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             macAddress_list = new ArrayList<>();
             bPic_list = new ArrayList<>();
             bAlert_list = new ArrayList<>();
+            bluetooth.myDeviceDistance = new ArrayList<>();
 
             for(int i = 0; i<result.length(); i++){//從頭到尾跑一次array
                 JSONObject jo = result.getJSONObject(i);
@@ -373,8 +374,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else
                     bAlert_list.add(100000);
-                distance.add("");//distance先寫死
+
+                //distance.add("");//distance先寫死
             }
+            bluetooth.mac = macAddress_list;
             //上面的資料讀取完  才設置listview
 //            adapter=new rowdata(this,bName_list,distance,macAddress_list,bPic_list,false);//顯示的方式
             adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,false);//顯示的方式
@@ -561,6 +564,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 loading.dismiss();
                 Toast.makeText(MainActivity.this, s, Toast.LENGTH_LONG).show();
                 getBeacon();
+                bluetooth.mac = macAddress_list;
             }
 
             @Override
@@ -701,6 +705,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void refresh() {
         bluetooth.getStartMyItemDistance(macAddress_list);  // 傳送使用者目前擁有的裝置列表，檢查是否在周圍，如果有的話就會顯示距離
 //        getBeacon();
+        bluetooth.mac = macAddress_list;
         getUserEvent();
         getUserGroup();
         adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,true);//顯示的方式
@@ -721,8 +726,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //Toast.makeText(getBaseContext(), "不是out of range", Toast.LENGTH_SHORT).show();
 
             }else{
-                //Toast.makeText(getBaseContext(), bName_list.get(x)+"是out of range", Toast.LENGTH_SHORT).show();
-
+                // do nothing
             }
 
             //Toast.makeText(getBaseContext(),bName_list.get(x)+"距離"+bluetooth.myDeviceDistance.get(x), Toast.LENGTH_SHORT).show();

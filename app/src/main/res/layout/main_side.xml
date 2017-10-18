@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -60,11 +61,10 @@
                 android:id="@+id/side_group_bt"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/ic_action_group"
-                android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
-                />
+                android:layout_marginStart="40dp"
+                android:layout_weight="0.5"
+                android:background="@drawable/ic_action_group" />
 
 
             <Button

@@ -192,7 +192,8 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
             }
             else
                 myDistance = -1;
-
+            //myDeviceDistance 和 Alert 長度不一樣
+            //所以Alert.get(i)會出錯
             if(myDistance > Alert.get(i) && !isAlert) {
 //                Toast.makeText(mContext,mac.get(i)+" is out of "+Alert.get(i)+"m\nnow is "+myDistance+"m", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
@@ -205,6 +206,9 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
                 isAlert = true;
             }
         }
+        //Toast.makeText(mContext,"distance長度是"+myDeviceDistance.size(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(mContext,"alert長度是"+Alert.size(), Toast.LENGTH_SHORT).show();
+
     }
 
     public void searchItem(BluetoothDevice device,String item,int rssi) {
