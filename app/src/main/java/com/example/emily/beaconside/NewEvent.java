@@ -33,7 +33,7 @@ public class NewEvent extends AppCompatActivity {
     TextView hiword;
     ImageView pic_view;
     EditText editText_cName;
-    String cPic;
+    String cPic = "group_pic1";//預設圖片一開始是group_pic1
     private ListView listview_newEvent;
 
     String uEmail = "sandy@gmail.com";
@@ -146,8 +146,11 @@ public class NewEvent extends AppCompatActivity {
         }
     }
 
-    private void addEvent() {
+
+    private void addEvent(){
+
         final String cName = editText_cName.getText().toString().trim();
+
 
         class AddEvent extends AsyncTask<Void,Void,String> {
 
@@ -156,42 +159,34 @@ public class NewEvent extends AppCompatActivity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                loading = ProgressDialog.show(NewEvent.this,"Adding...","Wait...",false,false);
-                //這裡把MainActivity改為相對應的java檔名就好
+                //loading = ProgressDialog.show(addNewBeacon.this,"Adding...","Wait...",false,false);
             }
 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                loading.dismiss();
-                Toast.makeText(NewEvent.this,s, Toast.LENGTH_SHORT).show();
-
+                //loading.dismiss();
+                Toast.makeText(NewEvent.this,s,Toast.LENGTH_LONG).show();
 
             }
 
             @Override
             protected String doInBackground(Void... v) {
-                HashMap<String,String> params = new HashMap<>();
-                params.put("cName",cName);
-                params.put("uEmail",uEmail);
-                params.put("cPic",cPic);
-                params.put("beaconSelect_string",beaconSelect_string.toString());
-                //params.put(php檔內的接收變數  $_POST["___"] , 要傳給php檔的java變數)
+
+                HashMap<String,String> param = new HashMap<>();
+                param.put("cName",cName);
+                param.put("uEmail",uEmail);
+                param.put("cPic",cPic);
+                param.put("beaconSelect_string",beaconSelect_string.toString());
 
                 RequestHandler rh = new RequestHandler();
-                String res = rh.sendPostRequest(Config.URL_CREATE_EVENT, params);
-                //String res = rh.sendPostRequest("php檔的網址", params);
-                //URL_ADD 是在 Config.java設定好的字串 也就是 http://140.117.71.114/employee/addEmp.php
-                //php檔可在ftp上傳下載
+                String res = rh.sendPostRequest(Config.URL_CREATE_EVENT, param);
                 return res;
             }
         }
 
-
-        //這兩行不用理
         AddEvent ae = new AddEvent();
         ae.execute();
-
     }
 
 
@@ -223,7 +218,9 @@ public class NewEvent extends AppCompatActivity {
                 }
             }
             addEvent();
-
+            Intent intent = new Intent();
+            intent.setClass(NewEvent.this,MainActivity.class);
+            startActivity(intent);
             return true;
         }
 

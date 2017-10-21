@@ -711,18 +711,18 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                loading = ProgressDialog.show(addNewBeacon.this,"Adding...","Wait...",false,false);
+                //loading = ProgressDialog.show(addNewBeacon.this,"Adding...","Wait...",false,false);
             }
 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                loading.dismiss();
+                //loading.dismiss();
                 Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent();
+                /*Intent intent = new Intent();
                 intent.setClass(addNewBeacon.this,MainActivity.class);
-                startActivity(intent);
+                startActivity(intent);*/
             }
 
             @Override
@@ -734,12 +734,11 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                 params.put("macAddress",macAddress);
                 params.put("bContent",bContent);
                 params.put("alertMiles",alertMiles);
-                params.put("nContent",nContent_array.get(0));
-                params.put("nStartTime",nStartTime_array.get(0));
-                params.put("nEndTime",nEndTime_array.get(0));
-                //params.put("nContent",nContent_array.get(0));
-                //params.put("nStartTime",nContent_array.get(0));
-
+                if(edit){
+                    params.put("nContent",nContent_array.get(0));
+                    params.put("nStartTime",nStartTime_array.get(0));
+                    params.put("nEndTime",nEndTime_array.get(0));
+                }
 
                 if (switchMode) {
                     //如果switch開

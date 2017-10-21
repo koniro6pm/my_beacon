@@ -954,16 +954,23 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                 JSON_STRING = s;
                 //Toast.makeText(editBeacon.this,s,Toast.LENGTH_LONG).show();
                 //將取得的json轉換為array list, 顯示在畫面上
-                if(JSON_STRING.isEmpty()){
+                /*String callback = "{\"result\":[]} ";
+                if(JSON_STRING.equals(callback)){
                     //沒有notice 編輯模式false
                     edit = false;
+                    Toast.makeText(editBeacon.this,"edit是false",Toast.LENGTH_LONG).show();
 
                 }else{
                     //有notcie 編輯模式true
                     edit = true;
+                    Toast.makeText(editBeacon.this,"edit是true",Toast.LENGTH_LONG).show();
+                    Toast.makeText(editBeacon.this,s+".",Toast.LENGTH_LONG).show();
+                    Toast.makeText(editBeacon.this,callback+"\n.",Toast.LENGTH_LONG).show();
+*/
+
                     showBeaconNotice();
 
-                }
+               // }
 
 
             }
@@ -985,74 +992,81 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacon()中得到的json
             JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
 
-            for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
-                JSONObject jo = result.getJSONObject(i);
-                int nId = jo.getInt("nId");
-                nStartTime = jo.getString("nStartTime");
-                nEndTime = jo.getString("nEndTime");
-                nContent = jo.getString("nContent");
-
-                DateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm");//設定datetime格式 去掉後面的:00(:ss)
-                DateFormat year = new SimpleDateFormat("yyyy");
-                DateFormat month = new SimpleDateFormat("MM");
-                DateFormat date = new SimpleDateFormat("dd");
-                DateFormat hour = new SimpleDateFormat("HH");
-                DateFormat min = new SimpleDateFormat("mm");
-
-                //先將資料庫裡的string轉為datetime格式的date物件
-                Date start = datetime.parse(nStartTime);
-                Date end = datetime.parse(nEndTime);
-                nStartTime = datetime.format(start);
-                nEndTime = datetime.format(end);
-
-                /****convert nStartTime*****/
-                dateFromYear = Integer.parseInt(year.format(start));
-                //將date物件的start 以year格式取得yyyy 再從string轉為int
-                dateFromMonth = Integer.parseInt(month.format(start));
-                dateFromDay = Integer.parseInt(date.format(start));
-                timeFromHour = Integer.parseInt(hour.format(start));
-                timeFromMin = Integer.parseInt(min.format(start));
-
-                /****convert nEndTime*****/
-                dateToYear = Integer.parseInt(year.format(end));
-                //將date物件的start 以year格式取得yyyy 再從string轉為int
-                dateToMonth = Integer.parseInt(month.format(end));
-                dateToDay = Integer.parseInt(date.format(end));
-                timeToHour = Integer.parseInt(hour.format(end));
-                timeToMin = Integer.parseInt(min.format(end));
-
-
-
-                //nStartTime = dateFromYear+"-"+dateFromMonth+"-"+dateFromDay+" "+timeFromHour+":"+timeFromMin;
-                //nEndTime = dateToYear+"-"+dateToMonth+"-"+dateToDay+" "+timeToHour+":"+timeToMin;
-
-                //設定卡片
-                nContent_array.add(0, nContent);
-                nStartTime_array.add(0,nStartTime);
-                nEndTime_array.add(0, nEndTime);
-
-                //計算constraintLayout應有的高度
-                int x = nContent_array.size();
-                int height = 150 + 240*x;
-
-                //重新設定constraintLayout的高度 listview才不會擠成一團
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
-                constraintLayout4.setLayoutParams(params);
-
-                //當增加完notification後  把圖示改為edit
-                String uri = "@drawable/" + "edit"; //圖片路徑和名稱
-                int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
-                add_notification.setImageResource(imageResource);
-
-                //標示目前狀態為編輯
+            if(result.length() == 0){
+                //Toast.makeText(editBeacon.this,"edit是false",Toast.LENGTH_LONG).show();
+                edit = false;
+            }else{
+                //Toast.makeText(editBeacon.this,"edit是true",Toast.LENGTH_LONG).show();
                 edit = true;
+                for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
+                    JSONObject jo = result.getJSONObject(i);
+                    int nId = jo.getInt("nId");
+                    nStartTime = jo.getString("nStartTime");
+                    nEndTime = jo.getString("nEndTime");
+                    nContent = jo.getString("nContent");
 
-                notificationAdapter=new NotificationAdapter(getBaseContext(),nContent_array,nStartTime_array,nEndTime_array);//顯示的方式
-                listViewNotification.setAdapter(notificationAdapter);
+                    DateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm");//設定datetime格式 去掉後面的:00(:ss)
+                    DateFormat year = new SimpleDateFormat("yyyy");
+                    DateFormat month = new SimpleDateFormat("MM");
+                    DateFormat date = new SimpleDateFormat("dd");
+                    DateFormat hour = new SimpleDateFormat("HH");
+                    DateFormat min = new SimpleDateFormat("mm");
 
+                    //先將資料庫裡的string轉為datetime格式的date物件
+                    Date start = datetime.parse(nStartTime);
+                    Date end = datetime.parse(nEndTime);
+                    nStartTime = datetime.format(start);
+                    nEndTime = datetime.format(end);
+
+                    /****convert nStartTime*****/
+                    dateFromYear = Integer.parseInt(year.format(start));
+                    //將date物件的start 以year格式取得yyyy 再從string轉為int
+                    dateFromMonth = Integer.parseInt(month.format(start));
+                    dateFromDay = Integer.parseInt(date.format(start));
+                    timeFromHour = Integer.parseInt(hour.format(start));
+                    timeFromMin = Integer.parseInt(min.format(start));
+
+                    /****convert nEndTime*****/
+                    dateToYear = Integer.parseInt(year.format(end));
+                    //將date物件的start 以year格式取得yyyy 再從string轉為int
+                    dateToMonth = Integer.parseInt(month.format(end));
+                    dateToDay = Integer.parseInt(date.format(end));
+                    timeToHour = Integer.parseInt(hour.format(end));
+                    timeToMin = Integer.parseInt(min.format(end));
+
+
+
+                    //nStartTime = dateFromYear+"-"+dateFromMonth+"-"+dateFromDay+" "+timeFromHour+":"+timeFromMin;
+                    //nEndTime = dateToYear+"-"+dateToMonth+"-"+dateToDay+" "+timeToHour+":"+timeToMin;
+
+                    //設定卡片
+                    nContent_array.add(0, nContent);
+                    nStartTime_array.add(0,nStartTime);
+                    nEndTime_array.add(0, nEndTime);
+
+                    //計算constraintLayout應有的高度
+                    int x = nContent_array.size();
+                    int height = 150 + 240*x;
+
+                    //重新設定constraintLayout的高度 listview才不會擠成一團
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+                    constraintLayout4.setLayoutParams(params);
+
+                    //當增加完notification後  把圖示改為edit
+                    String uri = "@drawable/" + "edit"; //圖片路徑和名稱
+                    int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
+                    add_notification.setImageResource(imageResource);
+
+                    //標示目前狀態為編輯
+                    edit = true;
+
+                    notificationAdapter=new NotificationAdapter(getBaseContext(),nContent_array,nStartTime_array,nEndTime_array);//顯示的方式
+                    listViewNotification.setAdapter(notificationAdapter);
+
+
+                }
 
             }
-
 
 
 
@@ -1102,13 +1116,13 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                loading = ProgressDialog.show(editBeacon.this,"Updating...","Wait...",false,false);
+               // loading = ProgressDialog.show(editBeacon.this,"Updating...","Wait...",false,false);
             }
 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                loading.dismiss();
+                //loading.dismiss();
                 Toast.makeText(editBeacon.this,s, Toast.LENGTH_SHORT).show();
 
             }
@@ -1134,9 +1148,12 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                 hashMap.put("groupId_delete",groupId_delete.toString());
                 hashMap.put("groupId_add",groupId_add.toString());
 
-                hashMap.put("nContent",nContent_array.get(0));
-                hashMap.put("nStartTime",nStartTime_array.get(0));
-                hashMap.put("nEndTime",nEndTime_array.get(0));
+                if(edit){
+                    hashMap.put("nContent",nContent_array.get(0));
+                    hashMap.put("nStartTime",nStartTime_array.get(0));
+                    hashMap.put("nEndTime",nEndTime_array.get(0));
+                }
+
 
 
                 RequestHandler rh = new RequestHandler();

@@ -112,6 +112,10 @@
         <activity
             android:name=".GroupMain"
             android:label="@string/title_activity_group_main"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".addBeaconToGroup"
+            android:label="@string/title_activity_add_beacon_to_group"
             android:theme="@style/AppTheme"></activity>
     </application>
 

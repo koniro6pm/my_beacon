@@ -24,4 +24,5 @@
     <string name="fb_login_protocol_scheme">fb1412054392241141</string>
     <string name="title_activity_change_group_pic">ChangeGroupPic</string>
     <string name="title_activity_group_main">GroupMain</string>
+    <string name="title_activity_add_beacon_to_group">addBeaconToGroup</string>
 </resources>
