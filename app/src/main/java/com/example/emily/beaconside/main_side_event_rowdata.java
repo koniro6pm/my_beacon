@@ -1,14 +1,14 @@
 package com.example.emily.beaconside;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-
 import java.util.ArrayList;
-
+import android.widget.LinearLayout;
 public class main_side_event_rowdata extends BaseAdapter {
 
     private final Context context;
@@ -56,6 +56,10 @@ public class main_side_event_rowdata extends BaseAdapter {
         }else{
             holder = (ViewHolder) convertView.getTag();
         }
+
+        // Set height and width and gravity
+        holder.event_side_bt.setLayoutParams(new LinearLayout.LayoutParams(300, 300));
+        holder.event_side_bt.setGravity(Gravity.CENTER);
         return convertView;
     }
 

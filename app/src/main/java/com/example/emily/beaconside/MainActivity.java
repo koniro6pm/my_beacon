@@ -38,6 +38,7 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -101,15 +102,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /* class main side */
     ListView group_list;
-    private RelationListView event_list1;
-    private RelationListView event_list2;
+    private GridView event_list;
     ArrayList<String> groupName_list;
     ArrayList<String> eventName_list;
     ArrayList<String> eventName_list1 = new ArrayList<String>();
     ArrayList<String> eventName_list2 = new ArrayList<String>();
     ArrayAdapter<String> adapter_sideList_group;
-    main_side_event_rowdata adapter_sideList_event1;
-    main_side_event_rowdata adapter_sideList_event2;
+    main_side_event_rowdata  adapter_sideList_event;
 
 
     /* long press */
@@ -151,11 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         /* class main side */
         group_list = (ListView)findViewById(R.id.group_list);
-        event_list1 = (RelationListView) findViewById(R.id.event_list1);
-        event_list2 = (RelationListView) findViewById(R.id.event_list2);
-        event_list1.setRelatedListView(event_list2);
-        event_list2.setRelatedListView(event_list1);
-
+        event_list = (GridView) findViewById(R.id.event_list);
 
 
         mContext = this;
@@ -303,12 +298,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getUserEvent();
         getUserGroup();
         bluetooth.getStartMyItemDistance(macAddress_list);
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            public void run() {
-//                refresh();
-//            }
-//        }, 3000);
     }
     //取得用戶擁有的beacon
     private void getBeacon(){
@@ -462,25 +451,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 eventId_array[i] = cId;
                 eventName_array[i] = cName;
-
-                if(eventName_list1.isEmpty() || eventName_list2.isEmpty())
-                    if(i==0 || i%2==0 )//left
-                        eventName_list1.add(cName);
-                    else//right
-                        eventName_list2.add(cName);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         //        Toast.makeText(MainActivity.this, "start"+eventName_list1+" start2:"+eventName_list2, Toast.LENGTH_LONG).show();
-        adapter_sideList_event1 = new main_side_event_rowdata(this,eventName_list1);
-        adapter_sideList_event2 = new main_side_event_rowdata(this,eventName_list2);
-        event_list1.setAdapter(adapter_sideList_event1);
-        event_list2.setAdapter(adapter_sideList_event2);
 
-        event_list1.setRelatedListView(event_list2);/*兩個互相控制*/
-        event_list2.setRelatedListView(event_list1);
+        eventName_list= new ArrayList<>(Arrays.asList(eventName_array));//array to arraylist
+        adapter_sideList_event = new main_side_event_rowdata(this,eventName_list);
+        event_list.setAdapter(adapter_sideList_event);
 
     }
 
