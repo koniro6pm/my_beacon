@@ -684,8 +684,8 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                         int height = 150 + 240*x;
 
                         //重新設定constraintLayout的高度 listview才不會擠成一團
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
-                        constraintLayout4.setLayoutParams(params);
+                        //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+                        //constraintLayout4.setLayoutParams(params);
 
                         //當增加完notification後  把圖示改為edit
                         String uri = "@drawable/" + "edit"; //圖片路徑和名稱

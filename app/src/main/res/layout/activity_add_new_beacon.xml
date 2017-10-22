@@ -130,8 +130,8 @@
             android:background="@drawable/img_camera3x"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="-20dp"
             android:layout_marginStart="8dp" />
 
     </android.support.constraint.ConstraintLayout>
@@ -491,7 +491,7 @@
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/constraintLayout4"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="220dp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:paddingTop="10dp"

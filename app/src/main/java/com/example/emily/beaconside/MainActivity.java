@@ -280,6 +280,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getBeacon();
         getUserEvent();
         getUserGroup();
+
+        sharedPreferences.edit()
+                .putString("NAME", uName)
+                .putString("EMAIL", uEmail)
+                .putString("ID", uId)
+
+                .apply();
     }
 
     @Override
@@ -314,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onPostExecute(s);
 //                loading.dismiss();
                 JSON_STRING = s;
+
                 //Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
                 //將取得的json轉換為array list, 顯示在畫面上
                 showMyBeacon();
@@ -415,6 +423,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onPostExecute(s);
 //                loading.dismiss();
                 JSON_STRING = s;
+
+                //將user的event json存到本機
+                sharedPreferences.edit()
+                        .putString("event_json", s)
+                        .apply();
+
                 //Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
                 //將取得的json轉換為array list, 顯示在畫面上
                 showUserEvent();
@@ -478,6 +492,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onPostExecute(s);
 //                loading.dismiss();
                 JSON_STRING = s;
+
+                //將user的group存到本機
+                sharedPreferences.edit()
+                        .putString("group_json", s)
+                        .apply();
+
                 //Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
                 //將取得的json轉換為array list, 顯示在畫面上
                 showUserGroup();
@@ -525,6 +545,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        Toast.makeText(MainActivity.this, "start"+groupName_list+"end", Toast.LENGTH_LONG).show();
         adapter_sideList_group = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,groupName_list);
         group_list.setAdapter(adapter_sideList_group);
+        group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() { //選項按下反應
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                int click_gId = groupId_array[position];//取得選擇beacon的名字
+                String click_gName =  groupName_array[position];//取得選擇beacon的macAddress
+
+
+                /**換頁到addNewBeacon**/
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this,editBeacon.class);
+                //傳遞變數
+                intent.putExtra("click_gId",click_gId);
+                intent.putExtra("click_gName",click_gName);
+                startActivity(intent);
+                finish();
+                /******/
+
+            }
+        });
 
     }
 
