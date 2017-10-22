@@ -45,7 +45,7 @@ public class ChangeGroupPic extends AppCompatActivity {
             items.add(item);
         }
         SimpleAdapter adapter = new SimpleAdapter(this,
-                items, R.layout.grid_item, new String[]{"image"},
+                items, R.layout.group_pic_item, new String[]{"image"},
                 new int[]{R.id.image});
         gridView = (GridView) findViewById(R.id.pic_grid);
         gridView.setNumColumns(2);
