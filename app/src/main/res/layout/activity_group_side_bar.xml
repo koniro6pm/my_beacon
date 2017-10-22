@@ -7,11 +7,11 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
-    android:clickable="false">
+    android:clickable="false">>
 
     <!--他就是用<include>去嵌入一個xml檔，這裡放的是你的主畫面-->
     <include
-        layout="@layout/app_bar_main"
+        layout="@layout/activity_group_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

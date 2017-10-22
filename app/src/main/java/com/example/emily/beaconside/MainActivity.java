@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.acl.Group;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -545,6 +546,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        Toast.makeText(MainActivity.this, "start"+groupName_list+"end", Toast.LENGTH_LONG).show();
         adapter_sideList_group = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,groupName_list);
         group_list.setAdapter(adapter_sideList_group);
+
+        //每個group點進去進入group頁面
         group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() { //選項按下反應
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -552,11 +555,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int click_gId = groupId_array[position];//取得選擇beacon的名字
                 String click_gName =  groupName_array[position];//取得選擇beacon的macAddress
 
+                Toast.makeText(MainActivity.this, click_gName, Toast.LENGTH_LONG).show();
 
                 /**換頁到addNewBeacon**/
                 Intent intent = new Intent();
-                intent.setClass(MainActivity.this,editBeacon.class);
-                //傳遞變數
+                intent.setClass(MainActivity.this,GroupMain.class);
                 intent.putExtra("click_gId",click_gId);
                 intent.putExtra("click_gName",click_gName);
                 startActivity(intent);
