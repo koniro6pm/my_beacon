@@ -555,7 +555,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int click_gId = groupId_array[position];//取得選擇beacon的名字
                 String click_gName =  groupName_array[position];//取得選擇beacon的macAddress
 
-                Toast.makeText(MainActivity.this, click_gName, Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, click_gName, Toast.LENGTH_LONG).show();
 
                 /**換頁到addNewBeacon**/
                 Intent intent = new Intent();

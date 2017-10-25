@@ -93,7 +93,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ChangePic" />
         <activity android:name=".AlertDistance" />
-        <activity android:name=".editBeacon" />
+        <activity android:name=".editBeacon"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".ChangeGroupPic"
             android:theme="@style/AppTheme.NoActionBar" />

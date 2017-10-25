@@ -149,6 +149,8 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
         //畫面上方的bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");//消除lable
 
         /**接收從SearchDevice傳過來的變數**/
         Intent intent = this.getIntent();

@@ -57,6 +57,8 @@ public class addBeaconToGroup extends AppCompatActivity {
         //畫面上方的bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");//消除lable
 
        List = (ListView) findViewById(R.id.listView_beacon);
         groupName = (TextView) findViewById(R.id.groupName);
