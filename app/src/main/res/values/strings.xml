@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BeaconSide</string>
+    <string name="app_name">Belongings</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

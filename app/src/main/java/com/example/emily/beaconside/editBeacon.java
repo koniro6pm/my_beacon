@@ -115,8 +115,7 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
     public int noti_hourOfDay,noti_minute;
     /* time end */
 
-    Button buttonTimeto,buttonDateto;
-    Button buttonTimefrom,buttonDatefrom;
+    Button buttonDateTimeto,buttonDateTimefrom;
     Button add_notification_check;
     Button notification_content_button;
     EditText notification_content;
@@ -454,8 +453,8 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             case 1://click start/from button
                 dateFromYear = year; dateFromMonth = month+1; dateFromDay = day;
                 dateToYear = year; dateToMonth = month+1; dateToDay = day+1;/*還有一個防呆機制沒有做，就是+1的時候可能換月*/
-                buttonDatefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
-                buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+//                buttonDateTimefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
+//                buttonDateTimeto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
                 break;
             case 2://click end/to button
                 if(year >= dateFromYear)
@@ -464,16 +463,16 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                             y=true;
                 if(y){//avoid stupid
                     dateToYear = year; dateToMonth = month+1; dateToDay = day;
-                    buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+//                    buttonDateTimeto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
                 }
                 break;
             case 3://edit
                 dateFromYear = year; dateFromMonth = month+1; dateFromDay = day;
-                buttonDatefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
+//                buttonDateTimefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
                 break;
             case 4:
                 dateToYear = year; dateToMonth = month+1; dateToDay = day;/*還有一個防呆機制沒有做，就是+1的時候可能換月*/
-                buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
+//                buttonDateTimeto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
                 break;
 
 
@@ -496,8 +495,10 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             case 1://click start/from button
                 timeFromHour = hourOfDay; timeFromMin = minute;
                 timeToHour = hourOfDay+1; timeToMin = minute;/*還有一個防呆機制沒有做，就是+1的時候可能換日*/
-                buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
-                buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                buttonDateTimefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay+"\n"+
+                                            timeFromHour + ":" + timeFromMin);
+                buttonDateTimeto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay+"\n"+
+                                            timeToHour + ":" + timeToMin);
                 break;
             case 2://click end/to button
                 if(hourOfDay >= timeFromHour)
@@ -505,16 +506,19 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                         y=true;
                 if(y){
                     timeToHour = hourOfDay; timeToMin = minute;
-                    buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                    buttonDateTimeto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay+"\n"+
+                                            timeToHour + ":" + timeToMin);
                 }
                 break;
             case 3:
                 timeFromHour = hourOfDay; timeFromMin = minute;
-                buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
+                buttonDateTimefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay+"\n"+
+                                            timeFromHour + ":" + timeFromMin);
                 break;
             case 4:
                 timeToHour = hourOfDay; timeToMin = minute;/*還有一個防呆機制沒有做，就是+1的時候可能換日*/
-                buttonTimeto.setText(timeToHour + ":" + timeToMin);
+                buttonDateTimeto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay+"\n"+
+                                            timeToHour + ":" + timeToMin);
                 break;
 
 
@@ -538,10 +542,8 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
         final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(editBeacon.this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false, false);
         // first dialog
         dialog.setContentView(R.layout.notification_dialog);
-        buttonDateto = (Button) dialog.findViewById(R.id.buttonDateto);
-        buttonTimeto = (Button) dialog.findViewById(R.id.buttonTimeto);
-        buttonDatefrom = (Button) dialog.findViewById(R.id.buttonDatefrom);
-        buttonTimefrom = (Button) dialog.findViewById(R.id.buttonTimefrom);
+        buttonDateTimeto = (Button) dialog.findViewById(R.id.buttonDateTimeto);
+        buttonDateTimefrom = (Button) dialog.findViewById(R.id.buttonDateTimefrom);
         add_notification_check = (Button) dialog.findViewById(R.id.add_notification_check);
         notification_content = (EditText) dialog.findViewById(R.id.notification_content);
 
@@ -558,20 +560,30 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
 
 //                buttonDateto.setClickable(false);
 //                buttonDateto.setClickable(false);
+
+
         if (edit) {
             add_notification_check.setText("更新");//原本是"Add notifiaction"
             notification_content.setText(nContent_array.get(0));
-            buttonDatefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay);//I don't know why month will less one so I add it
-            buttonDateto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay);
-            buttonTimefrom.setText(timeFromHour + ":" + timeFromMin);
-            buttonTimeto.setText(timeToHour + ":" + timeToMin);
-
+            buttonDateTimefrom.setText(dateFromYear + "-" + dateFromMonth + "-" + dateFromDay+"\n"+
+                    timeFromHour + ":" + timeFromMin);//I don't know why month will less one so I add it
+            buttonDateTimeto.setText(dateToYear + "-" + dateToMonth + "-" + dateToDay+"\n"+
+                    timeToHour + ":" + timeToMin);
         }
 
 
-        buttonDatefrom.setOnClickListener(new Button.OnClickListener() {
+        buttonDateTimefrom.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //開完date以後再開time
+                timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
+//                        buttonTimeto.setClickable(true);
+                if(edit){
+                    timeFlag = 3;
+                }else{
+                    timeFlag = 1;
+                }
+
                 datePickerDialog.setYearRange(1985, 2028);
                 datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
                 if(edit){
@@ -581,11 +593,20 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                 }
 
 //                        buttonDateto.setClickable(true);
+
             }
         });
-        buttonDateto.setOnClickListener(new Button.OnClickListener() {
+        buttonDateTimeto.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //開完date以後再開time
+                timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
+                if(edit){
+                    timeFlag = 4;
+                }else{
+                    timeFlag = 2;
+                }
+
                 datePickerDialog.setYearRange(1985, 2028);
                 datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
                 if(edit){
@@ -594,31 +615,21 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                     dateFlag = 2;
                 }
 
+
             }
         });
-        buttonTimefrom.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
-//                        buttonTimeto.setClickable(true);
-                if(edit){
-                    timeFlag = 3;
-                }else{
-                    timeFlag = 1;
-                }
-            }
-        });
-        buttonTimeto.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
-                if(edit){
-                    timeFlag = 4;
-                }else{
-                    timeFlag = 2;
-                }
-            }
-        });
+//        buttonTimefrom.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
+//        buttonTimeto.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
 
         //按下dialog的新增 或 更新 後
@@ -693,8 +704,8 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                     int height = 150 + 240*x;
 
                     //重新設定constraintLayout的高度 listview才不會擠成一團
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
-                    constraintLayout4.setLayoutParams(params);
+                    //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+                    //constraintLayout4.setLayoutParams(params);
 
                     //當增加完notification後  把圖示改為edit
                     String uri = "@drawable/" + "edit"; //圖片路徑和名稱
@@ -1049,8 +1060,8 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                     int height = 150 + 240*x;
 
                     //重新設定constraintLayout的高度 listview才不會擠成一團
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
-                    constraintLayout4.setLayoutParams(params);
+                    //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+                    //constraintLayout4.setLayoutParams(params);
 
                     //當增加完notification後  把圖示改為edit
                     String uri = "@drawable/" + "edit"; //圖片路徑和名稱

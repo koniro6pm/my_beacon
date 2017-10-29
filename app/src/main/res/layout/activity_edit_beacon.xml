@@ -17,7 +17,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/white"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <TextView
@@ -25,20 +25,19 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:text="新增物品"
-                android:textColor="@android:color/white"
+                android:text="編輯物品"
+                android:textColor="@color/colorPrimary"
                 android:textSize="15dp" />
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
-
     <!--item ifo-->
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="177dp"
         android:orientation="vertical"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginRight="20dp"
         android:layout_gravity="center">
         <!--src-->
@@ -48,9 +47,9 @@
             android:layout_height="40dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="15dp"
             android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="15dp"
             android:layout_marginTop="8dp"
             android:layout_weight="3"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -58,7 +57,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="@+id/editTextbName"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.3" />
+            app:layout_constraintVertical_bias="0.355" />
 
         <!--name-->
         <EditText
@@ -130,8 +129,8 @@
             android:background="@drawable/img_camera3x"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="3dp"
             android:layout_marginStart="8dp" />
 
     </android.support.constraint.ConstraintLayout>
@@ -491,7 +490,7 @@
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/constraintLayout4"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="220dp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:paddingTop="10dp"
