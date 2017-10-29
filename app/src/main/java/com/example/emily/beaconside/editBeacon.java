@@ -149,6 +149,8 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
         //畫面上方的bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");//消除lable
 
         /**接收從SearchDevice傳過來的變數**/
         Intent intent = this.getIntent();
@@ -1159,6 +1161,7 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                 hashMap.put("groupId_delete",groupId_delete.toString());
                 hashMap.put("groupId_add",groupId_add.toString());
 
+                //如果有notice
                 if(edit){
                     hashMap.put("nContent",nContent_array.get(0));
                     hashMap.put("nStartTime",nStartTime_array.get(0));

@@ -1,6 +1,7 @@
 package com.example.emily.beaconside;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,6 +49,8 @@ public class GroupSetting extends AppCompatActivity {
 //        gPic = extras.getString("gPic");
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
         uEmail = sharedPreferences.getString("EMAIL", "0");
+        Toast.makeText(this, gId+" "+gName, Toast.LENGTH_SHORT)
+                .show();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,24 +63,27 @@ public class GroupSetting extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.change_name:
-                Toast.makeText(this, "change name selected", Toast.LENGTH_SHORT)
-                        .show();
+                // 跳出視窗來輸入新名字
                 getRequest(Config.URL_UPDATE_GROUP_NAME,gId+"&gName="+gName);
                 break;
             case R.id.change_photo:
-                Toast.makeText(this, "change photo selected", Toast.LENGTH_SHORT)
-                        .show();
+                // 跳出選擇圖片畫面
                 getRequest(Config.URL_UPDATE_GROUP_PHOTO, gId+"&gPic="+gPic);
                 break;
             case R.id.delete_group:
-                Toast.makeText(this, "delete group selected", Toast.LENGTH_SHORT)
-                        .show();
+                // 插入一個警告視窗來確認刪除//
+
                 getRequest(Config.URL_DELETE_GROUP, gId);
+                Intent intent = new Intent();
+                intent.setClass(GroupSetting.this,MainActivity.class);
+                startActivity(intent);
                 break;
             case R.id.exit_group:
-                Toast.makeText(this, "exit group selected", Toast.LENGTH_SHORT)
-                        .show();
+                // 插入一個警告視窗來確認退出//
                 getRequest(Config.URL_EXIT_GROUP, gId+"&uEmail="+uEmail);
+                intent = new Intent();
+                intent.setClass(GroupSetting.this,MainActivity.class);
+                startActivity(intent);
                 break;
             default:
                 break;

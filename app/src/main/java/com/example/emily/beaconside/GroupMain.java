@@ -28,6 +28,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -69,9 +70,10 @@ public class GroupMain extends AppCompatActivity {
     View side_class_ls,side_group_ls;
     ImageView chooseGroup,chooseClass,userPicture;
     ListView listView1;
-    rowdata adapter;
+    GroupMain_beaconAdapter adapter;
     ArrayAdapter<String> adapterPress;
     TextView userName;
+    TextView textView_groupTitle;
 
 
     BluetoothMethod bluetooth = new BluetoothMethod();
@@ -89,6 +91,8 @@ public class GroupMain extends AppCompatActivity {
     public static ArrayList<String> bName_list = new ArrayList<String>();//我的beacon名稱list
     ArrayList<String> macAddress_list = new ArrayList<String>();//我的beacon mac list
     ArrayList<String> bPic_list = new ArrayList<String>();//我的beacon 圖片 list
+    ArrayList<String> avatar_list = new ArrayList<String>();//beacon擁有者的大頭照
+
     ArrayList<String> cName_list = new ArrayList<String>();//我的event名稱list
     ArrayList<String> distance= new ArrayList<String>();
     ArrayList<Integer> bAlert_list = new ArrayList<>();
@@ -121,9 +125,8 @@ public class GroupMain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_group_side_bar);
+
 
 
         // 從本機資料取使用者資料
@@ -136,10 +139,19 @@ public class GroupMain extends AppCompatActivity {
         get_uEmail = "\""+uEmail+"\"";
 
         //接收從MainActivity傳遞來的
-        Bundle extras = getIntent().getExtras();
-        gId = extras.getInt("click_gId");
-        gName = extras.getString("gName");
+        Intent intent = this.getIntent();
+        gId = intent.getIntExtra("click_gId",1);
+        Toast.makeText(GroupMain.this,Integer.toString(gId),Toast.LENGTH_SHORT).show();
+        gName = intent.getStringExtra("click_gName");
+        textView_groupTitle = (TextView) findViewById(R.id.groupTitle);
+        textView_groupTitle.setText(gName);
+        textView_groupTitle.setGravity(Gravity.CENTER | Gravity.BOTTOM);
 
+        //Toast.makeText(GroupMain.this,gId,Toast.LENGTH_SHORT).show();
+        Toast.makeText(GroupMain.this,gName,Toast.LENGTH_SHORT).show();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // 設置SwipeView重整
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_main);
@@ -199,28 +211,6 @@ public class GroupMain extends AppCompatActivity {
                 super.onPostExecute(result);
             }
         }.execute(url);
-
-
-
-//        /* 右下角plus button */
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                //按下加號換頁到SearchDevice
-//                Intent toSearchDevice = new Intent();
-//                toSearchDevice.setClass(GroupMain.this,SearchDevice.class);
-//                toSearchDevice.putExtra("uEmail",uEmail);
-//                toSearchDevice.putExtra("eventId_array",eventId_array);
-//                toSearchDevice.putExtra("eventName_array",eventName_array);
-//                toSearchDevice.putExtra("groupName_array",groupName_array);
-//                toSearchDevice.putExtra("groupId_array",groupId_array);
-//                bluetooth.bluetoothStop();
-//                startActivity(toSearchDevice);
-//            }
-//        });
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -286,6 +276,7 @@ public class GroupMain extends AppCompatActivity {
                 });
             }
         });
+
         getGroupBeacon();
         getUserEvent();
         getUserGroup();
@@ -335,7 +326,7 @@ public class GroupMain extends AppCompatActivity {
             @Override
             protected String doInBackground(Void... params) {
                 RequestHandler rh = new RequestHandler();
-                String s = rh.sendGetRequestParam(Config.URL_GET_ALL_BEACON,get_uEmail);
+                String s = rh.sendGetRequestParam(Config.URL_GET_GROUPBeacon,Integer.toString(gId));
                 return s;
             }
         }
@@ -354,6 +345,7 @@ public class GroupMain extends AppCompatActivity {
             macAddress_list = new ArrayList<>();
             bPic_list = new ArrayList<>();
             bAlert_list = new ArrayList<>();
+            avatar_list = new ArrayList<>();
             bluetooth.myDeviceDistance = new ArrayList<>();
 
             for(int i = 0; i<result.length(); i++){//從頭到尾跑一次array
@@ -361,26 +353,28 @@ public class GroupMain extends AppCompatActivity {
                 String macAddress = jo.getString("macAddress");//取得macAddress
                 String bName = jo.getString("bName");//取得beacon name
                 String bPic = jo.getString("bPic");//取得beacon name
-                String bAlert = jo.getString("alertMiles");//取得beacon的alertMile
-                String isAlert = jo.getString("isAlert");
+                String avatar = "https://graph.facebook.com/"+jo.getString("uId")+"/picture?type=small";
+                //String bAlert = jo.getString("alertMiles");//取得beacon的alertMile
+                //String isAlert = jo.getString("isAlert");
 
                 //bName,macAddress各自單獨存成一個array
                 bName_list.add(bName);
                 macAddress_list.add(macAddress);
                 bPic_list.add(bPic);
-                if(isAlert.equals("1")) {
+                avatar_list.add(avatar);
+                /*if(isAlert.equals("1")) {
                     bAlert_list.add(parseInt(bAlert));
 //                    Toast.makeText(MainActivity.this, bName + " alert is" + parseInt(bAlert), Toast.LENGTH_SHORT).show(); //顯示訊號
                 }
                 else
                     bAlert_list.add(100000);
-
+                */
                 //distance.add("");//distance先寫死
             }
             bluetooth.mac = macAddress_list;
             //上面的資料讀取完  才設置listview
 //            adapter=new rowdata(this,bName_list,distance,macAddress_list,bPic_list,false);//顯示的方式
-            adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,false);//顯示的方式
+            adapter=new GroupMain_beaconAdapter(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,avatar_list,false);//顯示的方式
 //            adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,true);//顯示的方式
             mergeAdapter.addAdapter(new ListTitleAdapter(this,adapter));
             mergeAdapter.addAdapter(adapter);
@@ -404,7 +398,7 @@ public class GroupMain extends AppCompatActivity {
                     startActivity(intent);
                 }
             } );
-            bluetooth.Alert = bAlert_list;
+            //bluetooth.Alert = bAlert_list;
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -537,6 +531,28 @@ public class GroupMain extends AppCompatActivity {
         adapter_sideList_group = new ArrayAdapter<String>(GroupMain.this, android.R.layout.simple_list_item_1,groupName_list);
         group_list.setAdapter(adapter_sideList_group);
 
+        //每個group點進去進入group頁面
+        group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() { //選項按下反應
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                int click_gId = groupId_array[position];//取得選擇beacon的名字
+                String click_gName =  groupName_array[position];//取得選擇beacon的macAddress
+
+                //Toast.makeText(GroupMain.this, click_gName, Toast.LENGTH_LONG).show();
+
+                /**換頁到addNewBeacon**/
+                Intent intent = new Intent();
+                intent.setClass(GroupMain.this,GroupMain.class);
+                intent.putExtra("click_gId",click_gId);
+                intent.putExtra("click_gName",click_gName);
+                startActivity(intent);
+                finish();
+                /******/
+
+            }
+        });
+
     }
 
     private void deleteBeacon(final String macAddress){
@@ -641,6 +657,7 @@ public class GroupMain extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.refresh, menu);
         getMenuInflater().inflate(R.menu.group_setting_button, menu);
+
         return true;
     }
     // 標題功能列
@@ -650,17 +667,17 @@ public class GroupMain extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_name) {
-            refresh();
-            return true;
-        }
-        else if(id == R.id.setting) {
-            Intent intent = new Intent();
-            intent.setClass(GroupMain.this,GroupSetting.class);
-            intent.putExtra("gId",gId);
-            intent.putExtra("gName",gName);
+        switch(id){
+            case R.id.action_name:
+                refresh();
+                return true;
+            case R.id.setting:
+                Intent intent = new Intent();
+                intent.setClass(GroupMain.this,GroupSetting.class);
+                intent.putExtra("gId",Integer.toString(gId));
+                intent.putExtra("gName",gName);
 //            intent.putExtra("gPic",gPic);
-            startActivity(intent);
+                startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -706,12 +723,12 @@ public class GroupMain extends AppCompatActivity {
         bluetooth.mac = macAddress_list;
         getUserEvent();
         getUserGroup();
-        adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,true);//顯示的方式
+        adapter=new GroupMain_beaconAdapter(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,avatar_list,true);//顯示的方式
         listView1.setAdapter(adapter);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,false);//顯示的方式
+                adapter=new GroupMain_beaconAdapter(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,avatar_list,false);//顯示的方式
                 listView1.setAdapter(adapter);
             }
         }, 3000);

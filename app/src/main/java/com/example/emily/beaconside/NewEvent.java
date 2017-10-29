@@ -60,6 +60,8 @@ public class NewEvent extends AppCompatActivity {
         //畫面上方的bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");//消除lable
 
         //接收從main傳過來的資料
         Intent intent = getIntent();
