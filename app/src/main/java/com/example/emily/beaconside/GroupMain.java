@@ -30,6 +30,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -140,6 +141,7 @@ public class GroupMain extends AppCompatActivity {
         //接收從MainActivity傳遞來的
         Intent intent = this.getIntent();
         gId = intent.getIntExtra("click_gId",1);
+        Toast.makeText(GroupMain.this,Integer.toString(gId),Toast.LENGTH_SHORT).show();
         gName = intent.getStringExtra("click_gName");
         textView_groupTitle = (TextView) findViewById(R.id.groupTitle);
         textView_groupTitle.setText(gName);
@@ -209,8 +211,6 @@ public class GroupMain extends AppCompatActivity {
                 super.onPostExecute(result);
             }
         }.execute(url);
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -299,6 +299,8 @@ public class GroupMain extends AppCompatActivity {
         getUserGroup();
         bluetooth.getStartMyItemDistance(macAddress_list);
     }
+
+
     //取得用戶擁有的beacon
     private void getGroupBeacon(){
         class GetBeacon extends AsyncTask<Void,Void,String> {
@@ -649,33 +651,38 @@ public class GroupMain extends AppCompatActivity {
     /* Item setting end */
 
 
-    /* refresh */
+    // 標題功能列
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.group_menu, menu);
+        getMenuInflater().inflate(R.menu.refresh, menu);
+        getMenuInflater().inflate(R.menu.group_setting_button, menu);
+
         return true;
     }
+    // 標題功能列
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         switch(id){
-            case R.id.action_refresh:
+            case R.id.action_name:
                 refresh();
                 return true;
-            case R.id.action_inform:
-                Toast.makeText(getBaseContext(), "進入group資訊頁面", Toast.LENGTH_SHORT).show();
-
+            case R.id.setting:
+                Intent intent = new Intent();
+                intent.setClass(GroupMain.this,GroupSetting.class);
+                intent.putExtra("gId",Integer.toString(gId));
+                intent.putExtra("gName",gName);
+//            intent.putExtra("gPic",gPic);
+                startActivity(intent);
         }
-
         return super.onOptionsItemSelected(item);
     }
     /* refresh end */
+
 
     @Override
     public void onBackPressed() {

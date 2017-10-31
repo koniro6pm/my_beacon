@@ -9,7 +9,7 @@
     <color name="colorMedium">#5c5c5c</color>
     <color name="colorLight">#8a8a8a</color>
     <color name="white">#ffffff</color>
-    <color name="black">#FF000000</color>
+    <color name="black">#000000</color>
 
     <color name="nav_header_b">#FFFFFFFF</color>
     <color name="nav_header_t">#FF000000</color>
