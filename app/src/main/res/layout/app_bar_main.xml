@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:text="Belongings"
+                android:text="Belonging"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp" />
         </android.support.v7.widget.Toolbar>

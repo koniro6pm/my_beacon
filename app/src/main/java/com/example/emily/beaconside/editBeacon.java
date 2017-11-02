@@ -71,14 +71,14 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
     ArrayList<String> select = new ArrayList<>(Arrays.asList("false","false"));
 
     String[] eventName_array;
-    int[] eventId_array;
+    String[] eventId_array;
     String[] groupName_array;
     int[] groupId_array;
     private boolean[]  event_select;//紀錄哪些event被選
     private boolean[]  group_select;//紀錄哪些group被選
     StringBuffer eventIdSelect = new StringBuffer();
     StringBuffer groupIdSelect = new StringBuffer();
-    int[] eventId_beacon;//beacon編輯前有的event id
+    String[] eventId_beacon;//beacon編輯前有的event id
     int[] groupId_beacon;//beacon編輯前有的group id
     private boolean[] event_beaconSelect;//紀錄最初哪些event被選(beacon編輯前的event)
     private boolean[] group_beaconSelect;//紀錄最初哪些event被選(beacon編輯前event)
@@ -159,7 +159,7 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
         bName = intent.getStringExtra("bName");
         macAddress = intent.getStringExtra("macAddress");
         eventName_array = extra.getStringArray("eventName_array");
-        eventId_array = extra.getIntArray("eventId_array");
+        eventId_array = extra.getStringArray("eventId_array");
         groupName_array = extra.getStringArray("groupName_array");
         groupId_array = extra.getIntArray("groupId_array");
         /***********/
@@ -262,7 +262,7 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
 
                                 for (int i = 0; i < event_select.length; i++) {
                                     if (event_select[i]) { //如果選擇的是true(被勾選)
-                                        eventIdSelect.append(Integer.toString(eventId_array[i])).append(",");
+                                        eventIdSelect.append(eventId_array[i]).append(",");
                                         //連接stringbuffer eventIdSelect(這是一段傳給Php的stringbuffer)
 
                                         horizontalList_event.add(eventName_array[i]);
@@ -842,10 +842,10 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacon()中得到的json
             JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
 
-            eventId_beacon = new int[result.length()];
+            eventId_beacon = new String[result.length()];
             for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
                 JSONObject jo = result.getJSONObject(i);
-                int cId = jo.getInt("cId");
+                String cId = jo.getString("cId");
                 eventId_beacon[i] = cId;
             }
 
@@ -1102,10 +1102,10 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
         for(int i = 0 ; i < eventId_array.length ; i++){
             if(event_beaconSelect[i] && !event_select[i]){//原本為true(勾選) 更新後為false(不勾選)
                 //要被刪除的紀錄
-                eventId_delete.append(Integer.toString(eventId_array[i])).append(",");
+                eventId_delete.append(eventId_array[i]).append(",");
             }else if(!event_beaconSelect[i] && event_select[i]){//原本為false(不勾選) 更新後為true(勾選)
                 //要被增加的紀錄
-                eventId_add.append(Integer.toString(eventId_array[i])).append(",");
+                eventId_add.append(eventId_array[i]).append(",");
             }else{
                 //編輯前後狀態都一樣 就不用動作
             }

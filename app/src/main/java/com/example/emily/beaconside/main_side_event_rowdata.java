@@ -1,6 +1,8 @@
 package com.example.emily.beaconside;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +15,22 @@ public class main_side_event_rowdata extends BaseAdapter {
 
     private final Context context;
     private final ArrayList<String> event_name;
+    private final ArrayList<String> event_cId;
+    private final ArrayList<String> event_cPic;
     private LayoutInflater mInflater;
 
-    public main_side_event_rowdata(Context context, ArrayList<String> name) {//架構子
+    private int[] image = {
+            R.drawable.group_pic1_s, R.drawable.group_pic2_s, R.drawable.group_pic3_s, R.drawable.group_pic3_s, R.drawable.group_pic4_s, R.drawable.group_pic5_s, R.drawable.group_pic6_s, R.drawable.group_pic7_s, R.drawable.group_pic8_s
+    };
+    private String[] imgText = new String[]{"group_pic1", "group_pic2", "group_pic3", "group_pic4", "group_pic5","group_pic6","group_pic7","group_pic8"};
+
+
+    public main_side_event_rowdata(Context context, ArrayList<String> name,ArrayList<String> cId,ArrayList<String> pic) {//架構子
         mInflater = LayoutInflater.from(context);//傳入Activity
         this.context = context;
         this.event_name = name;
+        this.event_cId = cId;
+        this.event_cPic = pic;
     }
 
 
@@ -43,7 +55,7 @@ public class main_side_event_rowdata extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;//緩存
         if(convertView==null){
             convertView=mInflater.inflate(R.layout.activity_main_side_event_rowdata,null);//inflate(要加載的佈局id，佈局外面再嵌套一層父佈局(root)->如果不需要就寫null)
@@ -51,6 +63,30 @@ public class main_side_event_rowdata extends BaseAdapter {
 
             holder.event_side_bt = (Button) convertView.findViewById(R.id.event_side_bt);
             holder.event_side_bt.setText(event_name.get(position));
+            String p =event_cPic.get(position);
+            for(int i = 0; i < imgText.length; i++){
+                if (p.equals(imgText[i])){
+                    holder.event_side_bt.setBackgroundResource(image[i]);
+                }
+            }
+
+            holder.event_side_bt.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+
+
+                    Bundle bundle = new Bundle();
+
+                    bundle.putString("message", event_cId.get(position));
+
+                    Intent intent = new Intent();
+                    intent.putExtras(bundle);
+                    intent.setClass(context, event_beacons.class);
+                    context.startActivity(intent);
+                    return true;
+                }
+            });
+
 
             convertView.setTag(holder);//把查找的view通過ViewHolder封裝好緩存起來方便 ​​多次重用，當需要時可以getTag拿出來
         }else{
@@ -58,7 +94,7 @@ public class main_side_event_rowdata extends BaseAdapter {
         }
 
         // Set height and width and gravity
-        holder.event_side_bt.setLayoutParams(new LinearLayout.LayoutParams(300, 300));
+        holder.event_side_bt.setLayoutParams(new LinearLayout.LayoutParams(200, 200));
         holder.event_side_bt.setGravity(Gravity.CENTER);
         return convertView;
     }

@@ -104,6 +104,9 @@
             android:name=".GroupMain"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".event_beacons"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".addBeaconToGroup"
             android:label="@string/title_activity_add_beacon_to_group"
             android:theme="@style/AppTheme"></activity>

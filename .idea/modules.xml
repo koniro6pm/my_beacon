@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BeaconSide.iml" filepath="$PROJECT_DIR$/BeaconSide.iml" />
       <module fileurl="file://$PROJECT_DIR$/BeaconSide_sandy.iml" filepath="$PROJECT_DIR$/BeaconSide_sandy.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/my_beacon.iml" filepath="$PROJECT_DIR$/my_beacon.iml" />
     </modules>
   </component>
 </project>

@@ -37,7 +37,7 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
     String[] groupName_array;
     int[] groupId_array;
     String[] eventName_array;
-    int[] eventId_array;
+    String[] eventId_array;
     String uEmail;
     // loading spinner
     private ProgressBar spinner;
@@ -61,7 +61,7 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
         Bundle extras = getIntent().getExtras();
         uEmail = extras.getString("uEmail");
         eventName_array = extras.getStringArray("eventName_array");
-        eventId_array = extras.getIntArray("eventId_array");
+        eventId_array = extras.getStringArray("eventId_array");
         groupName_array = extras.getStringArray("groupName_array");
         groupId_array = extras.getIntArray("groupId_array");
 

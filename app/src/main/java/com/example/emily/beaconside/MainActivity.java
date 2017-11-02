@@ -96,8 +96,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ArrayList<Integer> bAlert_list = new ArrayList<>();
     public int notificationId;
 
-    int[] eventId_array;//儲存event id
+    String[] eventId_array;//儲存event id
     String[] eventName_array;//儲存event name
+    String[] eventPic_array;//event 圖片
+
+
     int[] groupId_array;//儲存group id
     String[] groupName_array;//儲存group name
 
@@ -106,8 +109,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private GridView event_list;
     ArrayList<String> groupName_list;
     ArrayList<String> eventName_list;
-    ArrayList<String> eventName_list1 = new ArrayList<String>();
-    ArrayList<String> eventName_list2 = new ArrayList<String>();
+    ArrayList  eventId_list;
+    ArrayList<String> eventPic_list;
     ArrayAdapter<String> adapter_sideList_group;
     main_side_event_rowdata  adapter_sideList_event;
 
@@ -299,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         uEmail = sharedPreferences.getString("EMAIL", "0");
         uId = sharedPreferences.getString("ID", "0");
         get_uEmail = "\""+uEmail+"\"";
-        Toast.makeText(this, uName+uEmail+uId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, uName+uEmail+uId, Toast.LENGTH_SHORT).show();
         bluetooth.BTinit(this);
 //        bluetooth.getStartSearchDevice();
         getBeacon();
@@ -454,18 +457,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
 
             eventName_array = new String[result.length()];
-            eventId_array = new int[result.length()];
+            eventId_array = new String[result.length()];
+            eventPic_array = new String[result.length()];
 
             for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
                 JSONObject jo = result.getJSONObject(i);
 
-                int cId = parseInt(jo.getString("cId"));//取得event id , 由string轉為cId
+                String cId = jo.getString("cId");//取得event id , 由string轉為cId
                 String cName = jo.getString("cName");//取得event名稱
-
+                String cPic = jo.getString("cPic");//取得圖片字串
                 //Toast.makeText(MainActivity.this, cName, Toast.LENGTH_LONG).show();
 
                 eventId_array[i] = cId;
                 eventName_array[i] = cName;
+                eventPic_array[i] = cPic;
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -474,7 +479,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //        Toast.makeText(MainActivity.this, "start"+eventName_list1+" start2:"+eventName_list2, Toast.LENGTH_LONG).show();
 
         eventName_list= new ArrayList<>(Arrays.asList(eventName_array));//array to arraylist
-        adapter_sideList_event = new main_side_event_rowdata(this,eventName_list);
+        eventId_list= new ArrayList<>(Arrays.asList(eventId_array));//array to arraylist
+        eventPic_list= new ArrayList<>(Arrays.asList(eventPic_array));//array to arraylist
+        adapter_sideList_event = new main_side_event_rowdata(this,eventName_list,eventId_list,eventPic_list);
         event_list.setAdapter(adapter_sideList_event);
 
     }

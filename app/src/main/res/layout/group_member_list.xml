@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/imageView_trash"
-            android:layout_width="25dp"
-            android:layout_height="34dp"
-            android:layout_marginLeft="332dp"
-            android:layout_marginTop="23dp"
+            android:layout_width="14dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="269dp"
+            android:layout_marginTop="14dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/trash" />
@@ -23,22 +23,22 @@
             android:id="@+id/textView_uName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="17dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="16dp"
             android:text="成員名稱"
-            android:textSize="18dp"
+            android:textSize="15sp"
             app:layout_constraintLeft_toRightOf="@+id/imageView_uPic"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/imageView_uPic"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            app:srcCompat="@drawable/user"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="16dp"
-            app:layout_constraintLeft_toLeftOf="parent" />
+            app:srcCompat="@drawable/user" />
     </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>

@@ -67,7 +67,7 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
     ArrayList<String> select = new ArrayList<>(Arrays.asList("false","false"));
 
     String[] eventName_array;
-    int[] eventId_array;
+    String[] eventId_array;
     String[] groupName_array;
     int[] groupId_array;
     private boolean[]  event_select;//紀錄哪些event被選
@@ -147,7 +147,7 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
         bName = intent.getStringExtra("bName");
         macAddress = intent.getStringExtra("macAddress");
         eventName_array = extra.getStringArray("eventName_array");
-        eventId_array = extra.getIntArray("eventId_array");
+        eventId_array = extra.getStringArray("eventId_array");
         groupName_array = extra.getStringArray("groupName_array");
         groupId_array = extra.getIntArray("groupId_array");
         /***********/
@@ -280,7 +280,7 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
 
                                 for (int i = 0; i < event_select.length; i++) {
                                     if (event_select[i]) { //如果選擇的是true(被勾選)
-                                        eventIdSelect.append(Integer.toString(eventId_array[i])).append(",");
+                                        eventIdSelect.append(eventId_array[i]).append(",");
                                         //連接stringbuffer eventIdSelect(這是一段傳給Php的stringbuffer)
 
                                         horizontalList_event.add(eventName_array[i]);

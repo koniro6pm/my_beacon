@@ -28,14 +28,14 @@
         <TextView
             android:id="@+id/name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="1dp"
             android:layout_marginStart="24dp"
             android:paddingBottom="8dp"
             android:text="Hi"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="@color/colorAccent"
             android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -64,7 +64,7 @@
                 android:layout_marginEnd="40dp"
                 android:layout_marginStart="40dp"
                 android:layout_weight="0.5"
-                android:background="@drawable/ic_action_group" />
+                android:background="@drawable/people1" />
 
 
             <Button
@@ -72,7 +72,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:background="@drawable/ic_action_folder_special"
+                android:background="@drawable/folder1"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
                 />
