@@ -1,5 +1,5 @@
 package com.example.emily.beaconside;
-import android.app.ActionBar;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -9,18 +9,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 
@@ -28,23 +23,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-public class NewGroup extends AppCompatActivity implements View.OnClickListener {
 
 
-    CallbackManager callbackManager;
+public class EditGroupMember extends AppCompatActivity {
+
     AccessToken accessToken = AccessToken.getCurrentAccessToken();
-    private ListView List;
+    private ListView listView_memberlist;
     private ImageView Img;
     private FriendsListAdapter adapter;
     private EditText groupName;
     ImageButton buttonChangePic;
     public static String uEmail,founderId;
     private String gId;
+    String gName;
+    String gPic;
     ArrayList<String> listItemID = new ArrayList<String>();
     public static final int resultNum = 0;
     public String pic = "groupPic_1";
@@ -52,10 +46,12 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
 
     //取不到好友信箱 先寫死
     String friendId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_group);
+
+        setContentView(R.layout.activity_add_member_to_group);
 
         //畫面上方的bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -63,12 +59,12 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");//消除lable
 
-        List = (ListView) findViewById(R.id.listView);
-        Img  = (ImageView) findViewById(R.id.imageView3);
-        groupName = (EditText) findViewById(R.id.newGroupName);
-        buttonChangePic = (ImageButton) findViewById(R.id.buttonChangePic);
-        buttonChangePic.setOnClickListener(this);
-        pic_view = (ImageView)findViewById(R.id.pic_view);
+        Bundle extras = getIntent().getExtras();
+        gId = extras.getString("gId");
+        gName = extras.getString("gName");
+        gPic = extras.getString("gPic");
+
+        listView_memberlist = (ListView)findViewById(R.id.listView_memberlist);
 
         if(accessToken!=null) {
 
@@ -110,9 +106,9 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
                                     list.add(hashMap);
                                 }
 
-                                adapter = new FriendsListAdapter(NewGroup.this, list);
-                                List.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                                List.setAdapter(adapter);
+                                adapter = new FriendsListAdapter(EditGroupMember.this, list);
+                                listView_memberlist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                                listView_memberlist.setAdapter(adapter);
 
 
                             } catch (JSONException e) {
@@ -127,18 +123,10 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
 
         }
 
+
     }
 
-
-    //    @Override
-//    public void onBackPressed() {
-//        Intent backPressedIntent = new Intent();
-//        backPressedIntent .setClass(getApplicationContext(), MainActivity.class);
-//        startActivity(backPressedIntent );
-//        finish();
-//    }
-    private void addGroup() {
-        final String gName = groupName.getText().toString().trim();
+    private void addGroupMember() {
 
         class AddGroup extends AsyncTask<Void,Void,String> {
 
@@ -147,7 +135,7 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                loading = ProgressDialog.show(NewGroup.this,"Adding...","Wait...",false,false);
+                loading = ProgressDialog.show(EditGroupMember.this,"Adding...","Wait...",false,false);
 
             }
 
@@ -155,29 +143,29 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 loading.dismiss();
-                gId = s;
 //                Toast.makeText( NewGroup.this,gId,Toast.LENGTH_SHORT).show();
 
-                Intent goAddBeacon = new Intent();
-                goAddBeacon.setClass(NewGroup.this,addBeaconToGroup.class);
-                goAddBeacon.putExtra("gId",gId);
-                goAddBeacon.putExtra("gName",gName);
-                startActivity(goAddBeacon);
+                Intent intent = new Intent();
+                intent.setClass(EditGroupMember.this,GroupSetting.class);
+                intent.putExtra("gId",gId);
+                intent.putExtra("gName",gName);
+                intent.putExtra("gPic",gPic);
+//            intent.putExtra("gPic",gPic);
+                startActivity(intent);
                 finish();
+
             }
 
             @Override
             protected String doInBackground(Void... v) {
                 HashMap<String,String> params = new HashMap<>();
-                params.put("gName",gName);
-                params.put("uEmail",uEmail);
-                params.put("uId",founderId);
+                params.put("gId",gId);
                 params.put("friendId",friendId);
 
                 //params.put(php檔內的接收變數  $_POST["___"] , 要傳給php檔的java變數)
 
                 RequestHandler rh = new RequestHandler();
-                String res = rh.sendPostRequest(Config.URL_CREATE_GROUP, params);
+                String res = rh.sendPostRequest(Config.URL_EDIT_GROUP_MEMBER, params);
                 //String res = rh.sendPostRequest("php檔的網址", params);
                 //URL_ADD 是在 Config.java設定好的字串 也就是 http://140.117.71.114/employee/addEmp.php
                 //php檔可在ftp上傳下載
@@ -189,33 +177,12 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
         ae.execute();
     }
 
-
-    public void onClick(View v) {
-        if(v == buttonChangePic){
-
-            Intent intent = new Intent();
-            intent.setClass(NewGroup.this, ChangeGroupPic.class);
-            startActivityForResult(intent, resultNum);
-        }
-    }
-
+    /* cancel : go back button */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            if(requestCode == resultNum){
-                pic = data.getExtras().getString(ChangePic.FLAG);//從changPic得到的值(圖片名稱)
-
-                String uri = "@drawable/" + pic; //圖片路徑和名稱
-
-                int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
-
-                pic_view.setImageResource(imageResource);
-
-            }
-        }
+    public boolean onSupportNavigateUp(){
+        finish();
+        return true;
     }
-
 
     /* check button*/
     @Override
@@ -223,10 +190,9 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.new_item_save, menu);
         //Toast.makeText(this,"叫出menu", Toast.LENGTH_SHORT).show();
-        return super.onCreateOptionsMenu(menu);
-        //return true;
-    }
 
+        return true;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -236,8 +202,7 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_new_item_check) {
-            //執行新增group
-            /* 切回到原本的畫面 */
+            //執行新增
             listItemID.clear();
             friendId=null;
             for(int i=0;i<adapter.mChecked.size();i++){
@@ -247,7 +212,7 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
                 }
             }
             if(listItemID.size()==0){
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(NewGroup.this);
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(EditGroupMember.this);
                 builder1.setMessage("None");
                 builder1.show();
             }else{
@@ -262,17 +227,12 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
                     }
                 }
                 friendId = friendId.substring(0,friendId.length() - 1);
-                //Toast.makeText( NewGroup.this,friendId,Toast.LENGTH_SHORT).show();
 //                            sb.append(friendId);
 //                            AlertDialog.Builder builder2 = new AlertDialog.Builder(NewGroup.this);
 //                            builder2.setMessage(sb.toString());
 //                            builder2.show();
             }
-            addGroup();
-
-            Intent backPressedIntent = new Intent();
-            backPressedIntent.setClass(getApplicationContext(), MainActivity.class);
-            startActivity(backPressedIntent);
+            addGroupMember();
 
             return true;
         }
@@ -280,5 +240,4 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
         return super.onOptionsItemSelected(item);
     }
     /* check end */
-
 }

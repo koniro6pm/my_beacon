@@ -20,12 +20,12 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <TextView
-                android:id="@+id/groupTitle"
+                android:id="@+id/eventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:text="群組"
+                android:text="活動"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp" />
         </android.support.v7.widget.Toolbar>
@@ -79,7 +79,7 @@
             android:layout_marginTop="30dp"
             android:background="@drawable/button_round_orange"
             android:onClick="checkItem"
-            android:text="檢查所有群組物品"
+            android:text="檢查所有活動物品"
             android:textAlignment="center"
             android:textColor="@color/colorAccent" />
     </LinearLayout>

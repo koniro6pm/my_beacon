@@ -115,7 +115,10 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
             distanceTotal += result;
         }
 
-        result = Math.round(result*10);
+        //result = Math.round(result*10)/100;
+        result = Math.rint(result*100)/1000
+
+        ;
         return result;
     }
 
@@ -149,10 +152,10 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
     @Override
     public void BTSearchFindDevicestatus(boolean arg0) {//arg0:true/false，代表有沒有在找
         if(arg0==false){
-            Toast.makeText(mContext,"Stop Search", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mContext,"Stop Search", Toast.LENGTH_SHORT).show();
             isSearching = false;
         }else{
-            Toast.makeText(mContext,"Start Search",  Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mContext,"Start Search",  Toast.LENGTH_SHORT).show();
             isSearching = true;
         }
     }
@@ -188,7 +191,7 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
             double myDistance;
             if(tryParse(myDeviceDistance.get(i))!= -1) {  // 避免字串轉double發生錯誤，如果myDeviceDistance為字串則會回傳-1
                 myDistance = parseDouble(myDeviceDistance.get(i));
-                myDistance = myDistance / 100;// 換算成公尺
+                //myDistance = myDistance / 100;// 換算成公尺
             }
             else
                 myDistance = -1;

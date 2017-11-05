@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/event_side_bt"
-    android:layout_width="100dp"
-    android:layout_height="100dp"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
     android:layout_margin="8dp"
     android:text="event"
+    android:textColor="@color/white"
+    android:textSize="16sp"
     android:background="@drawable/event_bt"
     tools:context="com.example.emily.beaconside.main_side_event_rowdata"/>

@@ -78,7 +78,8 @@ public class main_side_event_rowdata extends BaseAdapter {
                     Bundle bundle = new Bundle();
 
                     bundle.putString("message", event_cId.get(position));
-
+                    bundle.putString("eventTitle",event_name.get(position));
+                    bundle.putString("eventPic",event_cPic.get(position));
                     Intent intent = new Intent();
                     intent.putExtras(bundle);
                     intent.setClass(context, event_beacons.class);
@@ -94,7 +95,7 @@ public class main_side_event_rowdata extends BaseAdapter {
         }
 
         // Set height and width and gravity
-        holder.event_side_bt.setLayoutParams(new LinearLayout.LayoutParams(200, 200));
+        holder.event_side_bt.setLayoutParams(new LinearLayout.LayoutParams(250, 250));
         holder.event_side_bt.setGravity(Gravity.CENTER);
         return convertView;
     }

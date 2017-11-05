@@ -5,14 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,11 +40,15 @@ public class GroupSetting extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     public static String uEmail;
     String JSON_STRING;
+    ImageView imageView_gPic;
+    TextView textView_gName;
 
     ArrayList<String> uName_list = new ArrayList<String>();;//群組會員名字
     ArrayList<String> uId_list = new ArrayList<String>();;//群組會員id
     private LinearLayoutManager linearLayoutManager;
     RecyclerView recyclerview_member;
+    ConstraintLayout constraintLayout_addBeacon;//增加共享物品區塊
+    ConstraintLayout constraintLayout_addMember;//增加其他人區塊
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,16 +57,27 @@ public class GroupSetting extends AppCompatActivity {
         // 標題功能列
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");//消除lable
 
 
-
-        //接收從MainActivity傳遞來的
+        //接收從GroupMain傳遞來的
         Bundle extras = getIntent().getExtras();
         gId = extras.getString("gId");
         gName = extras.getString("gName");
-//        gPic = extras.getString("gPic");
-        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        gPic = extras.getString("gPic");
+        sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         uEmail = sharedPreferences.getString("EMAIL", "0");
+
+        //Toast.makeText(GroupSetting.this,gPic,Toast.LENGTH_LONG).show();
+
+        imageView_gPic = (ImageView) findViewById(R.id.imageView_gPic);
+        String uri = "@drawable/" + gPic + "_ss"; //圖片路徑和名稱
+        int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
+        imageView_gPic.setImageResource(imageResource);
+
+        textView_gName = (TextView) findViewById(R.id.textView_gName);
+        textView_gName.setText(gName);
 
         //  宣告 recyclerView
 
@@ -70,8 +87,36 @@ public class GroupSetting extends AppCompatActivity {
 
         getGroupMember();
 
-    }
+        //進入增加共享物品
+        constraintLayout_addBeacon = (ConstraintLayout)findViewById(R.id.constraintLayout_addBeacon);
+        constraintLayout_addBeacon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(GroupSetting.this,EditGroupBeacon.class);
+                intent.putExtra("gId",gId);
+                intent.putExtra("gName",gName);
+                intent.putExtra("gPic",gPic);
+                startActivity(intent);
 
+            }
+        });
+
+        //進入增加其他人
+        constraintLayout_addMember = (ConstraintLayout)findViewById(R.id.constraintLayout_addMember);
+        constraintLayout_addMember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(GroupSetting.this,EditGroupMember.class);
+                intent.putExtra("gId",gId);
+                intent.putExtra("gName",gName);
+                intent.putExtra("gPic",gPic);
+                startActivity(intent);
+
+            }
+        });
+    }
 
     private void getGroupMember(){
         class GetBeacon extends AsyncTask<Void,Void,String> {
@@ -87,7 +132,7 @@ public class GroupSetting extends AppCompatActivity {
                 super.onPostExecute(s);
                 //loading.dismiss();
                 JSON_STRING = s;
-                Toast.makeText(GroupSetting.this,s,Toast.LENGTH_LONG).show();
+                //Toast.makeText(GroupSetting.this,s,Toast.LENGTH_LONG).show();
                 //將取得的json轉換為array list, 顯示在畫面上
                 showGroupMember();
 
@@ -115,7 +160,6 @@ public class GroupSetting extends AppCompatActivity {
 
                 String uId = jo.getString("uId");
                 String uName = jo.getString("uName");
-
 
 
                 uId_list.add(uId);

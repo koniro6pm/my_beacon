@@ -23,8 +23,7 @@
         <activity
             android:name=".MainActivity"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SearchDevice"
             android:label="Search Device" />
@@ -34,6 +33,7 @@
         <activity android:name=".CheckItem" />
         <activity
             android:name=".addNewBeacon"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
@@ -67,20 +67,24 @@
         <activity
             android:name=".Login"
             android:exported="true"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
@@ -89,30 +93,44 @@
         <activity android:name=".item_plus_content_rowdata" />
         <activity
             android:name=".NewGroup"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".NewEvent"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ChangePic" />
         <activity android:name=".AlertDistance" />
-        <activity android:name=".editBeacon"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".editBeacon"
+            android:label=""
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ChangeGroupPic"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".GroupMain"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".event_beacons"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".addBeaconToGroup"
-            android:label="@string/title_activity_add_beacon_to_group"
+            android:label=""
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".GroupSetting"
+            android:label=""
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".EditGroupMember"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".EditGroupBeacon"
+            android:label="@string/title_activity_edit_group_beacon"
             android:theme="@style/AppTheme"></activity>
-        <activity android:name=".GroupSetting"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
     </application>
 
 </manifest>

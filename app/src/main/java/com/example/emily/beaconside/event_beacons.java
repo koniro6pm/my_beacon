@@ -8,6 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +44,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -64,6 +74,9 @@ public class event_beacons extends AppCompatActivity {
     rowdata adapter;
     ArrayAdapter<String> adapterPress;
     TextView userName;
+    TextView eventTitle;
+    ImageView pic_view;
+
 
     BluetoothMethod bluetooth = new BluetoothMethod();
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -83,6 +96,9 @@ public class event_beacons extends AppCompatActivity {
     ArrayList<String> distance= new ArrayList<String>();
     ArrayList<Integer> bAlert_list = new ArrayList<>();
     private String cId;
+    String cPic;
+    String cName;
+
     String[] eventId_array;//儲存event id
     String[] eventName_array;//儲存event name
     String[] eventPic_array;//event 圖片
@@ -108,10 +124,21 @@ public class event_beacons extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_side_bar);
+        setContentView(R.layout.activity_event_side_bar);
 
+        //畫面上方的bar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");//消除lable
+
+        //當前event資訊
         Bundle bundle =getIntent().getExtras();
-        cId = bundle.getString("message"); // 接傳來的cid
+        cId = bundle.getString("message"); // 接傳來的cId
+        cName = bundle.getString("eventTitle");
+        cPic = bundle.getString("eventPic");
+
+        //Toast.makeText(this, cName, Toast.LENGTH_SHORT).show();
 
         // 從本機資料取使用者資料
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
@@ -136,10 +163,17 @@ public class event_beacons extends AppCompatActivity {
         });
         //listview
 
+        pic_view = (ImageView)findViewById(R.id.pic_view);
+        String uri = "@drawable/" + cPic; //圖片路徑和名稱
+        int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
+        pic_view.setImageResource(imageResource);
+
         /* class main side */
         group_list = (ListView)findViewById(R.id.group_list);
         event_list = (GridView) findViewById(R.id.event_list);
 
+        eventTitle = (TextView)findViewById(R.id.eventTitle);
+        eventTitle.setText(cName);
 
         mContext = this;
         listView1=(ListView) findViewById(R.id.listView1);
@@ -153,23 +187,95 @@ public class event_beacons extends AppCompatActivity {
 
 //        listView1.setAdapter(mergeAdapter);
         registerForContextMenu(listView1);
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
 //
-//                //按下加號換頁到SearchDevice
-//                Intent toSearchDevice = new Intent();
-//                toSearchDevice.setClass(event_beacons.this,SearchDevice.class);
-//                toSearchDevice.putExtra("uEmail",uEmail);
-//                toSearchDevice.putExtra("eventId_array",eventId_array);
-//                toSearchDevice.putExtra("eventName_array",eventName_array);
-//                toSearchDevice.putExtra("groupName_array",groupName_array);
-//                toSearchDevice.putExtra("groupId_array",groupId_array);
-//                bluetooth.bluetoothStop();
-//                startActivity(toSearchDevice);
-//            }
-//        });
+        // 設置側邊欄使用者名稱
+        userName = (TextView) findViewById(R.id.name);
+        userName.setText("Hi! "+uName);
+        userPicture = (ImageView)findViewById(R.id.userPicture) ;
+        String url ="https://graph.facebook.com/"+uId+"/picture?type=large";
+        new AsyncTask<String, Void, Bitmap>()
+        {
+            @Override
+            protected Bitmap doInBackground(String... params)
+            {
+                String url = params[0];
+                return getBitmapFromURL(url);
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap result)
+            {
+                Bitmap bmp = toRoundBitmap(result);
+                userPicture.setImageBitmap (bmp);
+                super.onPostExecute(result);
+            }
+        }.execute(url);
+
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        //some id
+        //左側滑動選單
+        side_new = (Button)findViewById(R.id.side_new);
+        side_group_bt = (Button)findViewById(R.id.side_group_bt);
+        side_class_bt = (Button)findViewById(R.id.side_class_bt);
+        side_class_ls = (View)findViewById(R.id.side_class_ls);
+        side_group_ls = (View)findViewById(R.id.side_group_ls);
+        chooseGroup = (ImageView)findViewById(R.id.chooseGroup);
+        chooseClass = (ImageView)findViewById(R.id.chooseClass);
+
+        side_group_bt.setOnClickListener(new View.OnClickListener() {//group
+            @Override
+            public void onClick(View v) {
+                side_class_ls.setVisibility(View.GONE);
+                side_group_ls.setVisibility(View.VISIBLE);
+                chooseGroup.setVisibility(View.VISIBLE);
+                chooseClass.setVisibility(View.GONE);
+
+                side_new.setText("+ 新增群組 ");
+                side_new.setOnClickListener(new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        //Toast.makeText(MainActivity.this,"new group Clicked ",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent();
+                        intent.setClass(event_beacons.this,NewGroup.class);
+                        bluetooth.bluetoothStop();
+                        startActivity(intent);
+                    }
+
+                });
+            }
+        });
+        side_class_bt.setOnClickListener(new View.OnClickListener() {//class
+            @Override
+            public void onClick(View v) {
+                side_group_ls.setVisibility(View.GONE);
+                side_class_ls.setVisibility(View.VISIBLE);
+                chooseClass.setVisibility(View.VISIBLE);
+                chooseGroup.setVisibility(View.GONE);
+
+                side_new.setText("+ 新增活動");
+                side_new.setOnClickListener(new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        //Toast.makeText(MainActivity.this,"new event Clicked ",Toast.LENGTH_SHORT).show();
+                        Intent MainToNewEvent = new Intent();
+                        MainToNewEvent.putExtra("uEmail",uEmail);
+                        MainToNewEvent.putExtra("bName_list",bName_list);
+                        MainToNewEvent.putExtra("macAddress_list",macAddress_list);
+                        MainToNewEvent.putExtra("bPic_list",bPic_list);
+                        MainToNewEvent.setClass(event_beacons.this,NewEvent.class);
+                        bluetooth.bluetoothStop();
+                        startActivity(MainToNewEvent);
+                    }
+
+                });
+            }
+        });
         getBeacon();
 
 
@@ -189,7 +295,7 @@ public class event_beacons extends AppCompatActivity {
         uEmail = sharedPreferences.getString("EMAIL", "0");
         uId = sharedPreferences.getString("ID", "0");
         get_uEmail = "\""+uEmail+"\"";
-        Toast.makeText(this, uName+uEmail+uId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, uName+uEmail+uId, Toast.LENGTH_SHORT).show();
         bluetooth.BTinit(this);
 //        bluetooth.getStartSearchDevice();
         getBeacon();
@@ -604,5 +710,51 @@ public class event_beacons extends AppCompatActivity {
     }
 
     // 從URL下載圖片
+    public static Bitmap getBitmapFromURL(String imageUrl) {
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            return bitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static Bitmap toRoundBitmap(Bitmap bitmap) {
+        //圆形图片宽高
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        //正方形的边长
+        int r = 0;
+        //取最短边做边长
+        if(width > height) {
+            r = height;
+        } else {
+            r = width;
+        }
+        //构建一个bitmap
+        Bitmap backgroundBmp = Bitmap.createBitmap(width,
+                height, Bitmap.Config.ARGB_8888);
+        //new一个Canvas，在backgroundBmp上画图
+        Canvas canvas = new Canvas(backgroundBmp);
+        Paint paint = new Paint();
+        //设置边缘光滑，去掉锯齿
+        paint.setAntiAlias(true);
+        //宽高相等，即正方形
+        RectF rect = new RectF(0, 0, r, r);
+        //通过制定的rect画一个圆角矩形，当圆角X轴方向的半径等于Y轴方向的半径时，
+        //且都等于r/2时，画出来的圆角矩形就是圆形
+        canvas.drawRoundRect(rect, r/2, r/2, paint);
+        //设置当两个图形相交时的模式，SRC_IN为取SRC图形相交的部分，多余的将被去掉
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        //canvas将bitmap画在backgroundBmp上
+        canvas.drawBitmap(bitmap, null, rect, paint);
+        //返回已经绘画好的backgroundBmp
+        return backgroundBmp;
+    }
 
 }

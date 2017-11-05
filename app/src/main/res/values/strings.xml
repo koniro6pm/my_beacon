@@ -25,4 +25,6 @@
     <string name="title_activity_change_group_pic">ChangeGroupPic</string>
     <string name="title_activity_group_main">GroupMain</string>
     <string name="title_activity_add_beacon_to_group">addBeaconToGroup</string>
+    <string name="title_activity_add_member_to_group">AddMemberToGroup</string>
+    <string name="title_activity_edit_group_beacon">EditGroupBeacon</string>
 </resources>

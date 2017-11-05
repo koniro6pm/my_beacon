@@ -741,7 +741,7 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 //loading.dismiss();
-                Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
+                //Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
 
                 /*Intent intent = new Intent();
                 intent.setClass(addNewBeacon.this,MainActivity.class);

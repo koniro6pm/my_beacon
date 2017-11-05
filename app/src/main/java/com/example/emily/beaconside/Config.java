@@ -29,7 +29,7 @@ public class Config{
     public static final String URL_CREATE_GROUP = "http://140.117.71.114/beacon/createGroup.php";
     public static final String URL_CREATE_EVENT = "http://140.117.71.114/beacon/createEvent.php";
     public static final String URL_ADD_BEACON_TO_GROUP = "http://140.117.71.114/beacon/addBeaconToGroup.php";
-    public static final String URL_GET_GROUPBeacon = "http://140.117.71.114/beacon/getBeaconGroup_1.php?gId=";
+    public static final String URL_GET_GROUPBeacon = "http://140.117.71.114/beacon/getGroupBeacon_1.php?gId=";
     public static final String URL_DELETE_GROUP= "http://140.117.71.114/beacon/deleteGroup.php?gId=";
     public static final String URL_EXIT_GROUP= "http://140.117.71.114/beacon/exitGroup.php?gId=";
     public static final String URL_UPDATE_GROUP_NAME= "http://140.117.71.114/beacon/deleteGroup.php?gId=";
@@ -37,6 +37,7 @@ public class Config{
     public static final String URL_GET_BEACON_FROM_EVENT = "http://140.117.71.114/beacon/getBeaconFromEvent.php?cId=";
     public static final String URL_DELETE_BEACON_EVENT="http://140.117.71.114/beacon/deleteBeaconEvent.php?temp=";
     public static final String URL_GET_GROUP_MEMBER="http://140.117.71.114/beacon/getGroupMember.php?gId=";
+    public static final String URL_EDIT_GROUP_MEMBER="http://140.117.71.114/beacon/editGroupMember.php?g";
 
 
     //Keys that will be used to send the request to php scripts

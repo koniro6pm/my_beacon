@@ -13,7 +13,7 @@
             android:layout_marginTop="20dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Already Bring"
+            android:text="已帶"
             android:textAlignment="center"
             android:textColor="@color/colorGreen"
             android:textSize="20sp" />
@@ -31,7 +31,7 @@
             android:layout_marginTop="40dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Forget Bring"
+            android:text="未帶"
             android:textAlignment="center"
             android:textColor="@color/colorAccent"
             android:textSize="20sp" />
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Click item to search"
+            android:text="點擊開始搜尋"
             android:textAlignment="center"
             android:textColor="@color/colorLight"
             android:textSize="12sp" />
@@ -65,6 +65,6 @@
             android:layout_marginTop="30dp"
             android:background="@drawable/button_round_blue"
             android:onClick="onBackPressed"
-            android:text="Confirm"
+            android:text="確認"
             android:textColor="@color/white" />
     </LinearLayout>

@@ -778,7 +778,7 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                 String bContent = jo.getString("bContent");
                 String alertMiles = jo.getString("alertMiles");
                 String isAlert = jo.getString("isAlert");
-                String bPic = jo.getString("bPic");
+                bPic = jo.getString("bPic");
 
                 editTextbContent.setText(bContent);
                 editTextMile.setText(alertMiles);
@@ -854,7 +854,7 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             //如果user擁有的(全部)event ID 和 beacon 的 ID 相同  這個event就是被select(true)
             for(int x = 0 ; x < eventId_array.length ; x++){
                 for(int y = 0 ; y < eventId_beacon.length ; y++){
-                    if(eventId_array[x] == eventId_beacon[y]){
+                    if(eventId_array[x].equals(eventId_beacon[y])){
                         event_select[x] = true;//紀錄當前beacon event誰被選了
                         horizontalList_event.add(eventName_array[x]);
                         event_beaconSelect[x] = true;//紀錄beacon編輯前  event誰被選了

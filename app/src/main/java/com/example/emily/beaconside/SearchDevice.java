@@ -177,7 +177,7 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
                 intent.putExtra("eventId_array",eventId_array);
                 intent.putExtra("groupName_array",groupName_array);
                 intent.putExtra("groupId_array",groupId_array);
-                Toast.makeText(SearchDevice.this, bName + " selected\n" + uEmail+"\n"+macAddress+"\n"+eventName_array+"\n"+eventId_array+"\n"+groupName_array+"\n"+groupId_array, Toast.LENGTH_LONG).show(); //顯示訊號
+                //Toast.makeText(SearchDevice.this, bName + " selected\n" + uEmail+"\n"+macAddress+"\n"+eventName_array+"\n"+eventId_array+"\n"+groupName_array+"\n"+groupId_array, Toast.LENGTH_LONG).show(); //顯示訊號
                 startActivity(intent);
                 finish();
                 /******/

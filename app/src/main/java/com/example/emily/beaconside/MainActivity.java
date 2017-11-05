@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     int[] groupId_array;//儲存group id
     String[] groupName_array;//儲存group name
-
+    String[] groupPic_array;
     /* class main side */
     ListView group_list;
     private GridView event_list;
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 chooseGroup.setVisibility(View.VISIBLE);
                 chooseClass.setVisibility(View.GONE);
 
-                side_new.setText("+ New group");
+                side_new.setText("+ 新群組");
                 side_new.setOnClickListener(new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 chooseClass.setVisibility(View.VISIBLE);
                 chooseGroup.setVisibility(View.GONE);
 
-                side_new.setText("+ New Event");
+                side_new.setText("+ 新活動");
                 side_new.setOnClickListener(new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
@@ -325,6 +325,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onPostExecute(s);
 //                loading.dismiss();
                 JSON_STRING = s;
+
+                sharedPreferences.edit()
+                        .putString("user_beacon_json", s)
+                        .apply();
 
                 //Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
                 //將取得的json轉換為array list, 顯示在畫面上
@@ -531,15 +535,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             groupName_array = new String[result.length()];
             groupId_array = new int[result.length()];
+            groupPic_array = new String[result.length()];
 
             for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
                 JSONObject jo = result.getJSONObject(i);
 
                 int gId = parseInt(jo.getString("gId"));//取得event id , 由string轉為cId
                 String gName = jo.getString("gName");//取得event名稱
+                String gPic = jo.getString("gPic");
 
                 groupId_array[i] = gId;
                 groupName_array[i] = gName;
+                groupPic_array[i] = gPic;
 
                 //Toast.makeText(MainActivity.this, gName, Toast.LENGTH_LONG).show();
 
@@ -561,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 int click_gId = groupId_array[position];//取得選擇beacon的名字
                 String click_gName =  groupName_array[position];//取得選擇beacon的macAddress
-
+                String click_gPic = groupPic_array[position];
                 //Toast.makeText(MainActivity.this, click_gName, Toast.LENGTH_LONG).show();
 
                 /**換頁到addNewBeacon**/
@@ -569,6 +576,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent.setClass(MainActivity.this,GroupMain.class);
                 intent.putExtra("click_gId",click_gId);
                 intent.putExtra("click_gName",click_gName);
+                intent.putExtra("click_gPic",click_gPic);
                 startActivity(intent);
                 finish();
                 /******/
@@ -753,7 +761,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //如果這個beacon的距離不是out of range(表示有搜尋到)
                 //就傳給getNotice這顆beacon的mac
                 getNotice(bName_list.get(x),macAddress_list.get(x));
-                //Toast.makeText(getBaseContext(), "不是out of range", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getBaseContext(), bName_list.get(x)+"不是out of range", Toast.LENGTH_SHORT).show();
 
             }else{
                 // do nothing
@@ -783,6 +791,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //loading.dismiss();
 
 
+
                 //將php返回的json->object->array
                 try {
                     //jsonObject,jsonArray都是全域　方便給checkIfThere使用
@@ -791,7 +800,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     //如果返回的notice json不為空的 就推播
                     if (jsonArrayNotice.length() != 0) {
-                        //Toast.makeText(getBaseContext(),"這個s是"+jsonArrayNotice, Toast.LENGTH_SHORT).show();
 
                         for (int j = 0; j < jsonArrayNotice.length(); j++) { //跑迴圈從result json第一個開始到最後一個
                             JSONObject joo = jsonArrayNotice.getJSONObject(j);
@@ -835,7 +843,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             protected String doInBackground(Void... params) {
                 RequestHandler rh = new RequestHandler();
-                String s = rh.sendGetRequestParam(Config.URL_GET_NOTICE,macAddress);
+                String s = rh.sendGetRequestParam(Config.URL_GET_NOTICE,"\""+macAddress+"\"");
                 //Toast.makeText(getBaseContext(),s, Toast.LENGTH_SHORT).show();
                 return s;
             }
@@ -848,7 +856,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void broadcastNotice(int nId,String title, String content) {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.compass)
+                        .setSmallIcon(getNotificationIcon())
                         .setContentTitle(title)
                         .setContentText(content)
                         .setDefaults(Notification.DEFAULT_VIBRATE);
@@ -865,6 +873,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // 使用設定的通知編號為編號發出通知
         manager.notify(nId, notification);
 
+    }
+
+    private int getNotificationIcon() {
+        boolean useWhiteIcon = (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP);
+        return useWhiteIcon ? R.drawable.ic_launcher : R.drawable.ic_launcher;
     }
 
     public void checkItem(View view) {

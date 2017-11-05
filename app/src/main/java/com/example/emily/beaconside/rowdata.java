@@ -88,7 +88,12 @@ public class rowdata extends BaseAdapter {
         int resID = context.getResources().getIdentifier(bPic, "drawable","com.example.emily.beaconside");
         holder.beaconImage.setImageResource(resID);
         holder.beaconName.setText(value_deviceName.get(position));
-        holder.beaconDistance.setText(value_deviceDsc.get(position));
+        if(value_deviceDsc.get(position).equals("Out of Range")){
+            holder.beaconDistance.setText(value_deviceDsc.get(position));
+        }else{
+            holder.beaconDistance.setText(value_deviceDsc.get(position)+" M");
+
+        }
         holder.beaconAddress.setText(value_address.get(position));
 
 

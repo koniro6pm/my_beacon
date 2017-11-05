@@ -74,6 +74,7 @@ public class GroupMain extends AppCompatActivity {
     ArrayAdapter<String> adapterPress;
     TextView userName;
     TextView textView_groupTitle;
+    ImageView pic_view;
 
 
     BluetoothMethod bluetooth = new BluetoothMethod();
@@ -107,6 +108,7 @@ public class GroupMain extends AppCompatActivity {
 
     public int gId;
     public String gName;
+    public String gPic;
     /* class main side */
     ListView group_list;
     private GridView event_list;
@@ -129,7 +131,7 @@ public class GroupMain extends AppCompatActivity {
 
 
 
-        // 從本機資料取使用者資料
+        // 從本機資3料取使用者資料
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
         uName = sharedPreferences.getString("NAME", "YOO");
         uEmail = sharedPreferences.getString("EMAIL", "YOO@gmail.com");
@@ -143,6 +145,14 @@ public class GroupMain extends AppCompatActivity {
         gId = intent.getIntExtra("click_gId",1);
         //Toast.makeText(GroupMain.this,Integer.toString(gId),Toast.LENGTH_SHORT).show();
         gName = intent.getStringExtra("click_gName");
+        gPic = intent.getStringExtra("click_gPic");
+
+        pic_view = (ImageView)findViewById(R.id.pic_view);
+        String uri = "@drawable/" + gPic; //圖片路徑和名稱
+        int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
+        pic_view.setImageResource(imageResource);
+
+
         textView_groupTitle = (TextView) findViewById(R.id.groupTitle);
         textView_groupTitle.setText(gName);
         textView_groupTitle.setGravity(Gravity.CENTER | Gravity.BOTTOM);
@@ -354,21 +364,21 @@ public class GroupMain extends AppCompatActivity {
                 String bName = jo.getString("bName");//取得beacon name
                 String bPic = jo.getString("bPic");//取得beacon name
                 String avatar = "https://graph.facebook.com/"+jo.getString("uId")+"/picture?type=small";
-                //String bAlert = jo.getString("alertMiles");//取得beacon的alertMile
-                //String isAlert = jo.getString("isAlert");
+                String bAlert = jo.getString("alertMiles");//取得beacon的alertMile
+                String isAlert = jo.getString("isAlert");
 
                 //bName,macAddress各自單獨存成一個array
                 bName_list.add(bName);
                 macAddress_list.add(macAddress);
                 bPic_list.add(bPic);
                 avatar_list.add(avatar);
-                /*if(isAlert.equals("1")) {
+                if(isAlert.equals("1")) {
                     bAlert_list.add(parseInt(bAlert));
 //                    Toast.makeText(MainActivity.this, bName + " alert is" + parseInt(bAlert), Toast.LENGTH_SHORT).show(); //顯示訊號
                 }
                 else
                     bAlert_list.add(100000);
-                */
+
                 //distance.add("");//distance先寫死
             }
             bluetooth.mac = macAddress_list;
@@ -384,7 +394,7 @@ public class GroupMain extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String itemName = bName_list.get(position);      //哪一個列表
                     String itemAddress = macAddress_list.get(position);
-                    Toast.makeText(GroupMain.this, itemName + " selected", Toast.LENGTH_SHORT).show(); //顯示訊號
+                    //Toast.makeText(GroupMain.this, itemName + " selected", Toast.LENGTH_SHORT).show(); //顯示訊號
                     bluetooth.bluetoothFunction="searchItem";
 
 //                /*換頁面 有換Activity*/
@@ -398,7 +408,7 @@ public class GroupMain extends AppCompatActivity {
                     startActivity(intent);
                 }
             } );
-            //bluetooth.Alert = bAlert_list;
+            bluetooth.Alert = bAlert_list;
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -569,7 +579,7 @@ public class GroupMain extends AppCompatActivity {
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 loading.dismiss();
-                Toast.makeText(GroupMain.this, s, Toast.LENGTH_LONG).show();
+                //Toast.makeText(GroupMain.this, s, Toast.LENGTH_LONG).show();
                 getGroupBeacon();
                 bluetooth.mac = macAddress_list;
             }
@@ -676,6 +686,7 @@ public class GroupMain extends AppCompatActivity {
                 intent.setClass(GroupMain.this,GroupSetting.class);
                 intent.putExtra("gId",Integer.toString(gId));
                 intent.putExtra("gName",gName);
+                intent.putExtra("gPic",gPic);
 //            intent.putExtra("gPic",gPic);
                 startActivity(intent);
         }
@@ -820,7 +831,7 @@ public class GroupMain extends AppCompatActivity {
             @Override
             protected String doInBackground(Void... params) {
                 RequestHandler rh = new RequestHandler();
-                String s = rh.sendGetRequestParam(Config.URL_GET_NOTICE,macAddress);
+                String s = rh.sendGetRequestParam(Config.URL_GET_NOTICE,"\""+macAddress+"\"");
                 //Toast.makeText(getBaseContext(),s, Toast.LENGTH_SHORT).show();
                 return s;
             }
@@ -833,8 +844,8 @@ public class GroupMain extends AppCompatActivity {
     public void broadcastNotice(int nId,String title, String content) {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.compass)
-                        .setContentTitle(title)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle(gName+"："+title)
                         .setContentText(content)
                         .setDefaults(Notification.DEFAULT_VIBRATE);
         // Creates an explicit intent for an Activity in your app
@@ -911,6 +922,4 @@ public class GroupMain extends AppCompatActivity {
         //返回已经绘画好的backgroundBmp
         return backgroundBmp;
     }
-    }
-
-
+}

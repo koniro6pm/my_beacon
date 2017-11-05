@@ -83,13 +83,13 @@ public class checkitem_rowdata extends BaseAdapter {
 
         double d = tryParse(bStatus_list.get(position));
         if(isForget) {
-            if(d < 50)
+            if(d < 0.5)
                 invisibleRow(holder);
             else
                 displayRow(holder,position);
         }
         else{
-            if(d < 50)
+            if(d < 0.5)
                 displayRow(holder,position);
             else
                 invisibleRow(holder);

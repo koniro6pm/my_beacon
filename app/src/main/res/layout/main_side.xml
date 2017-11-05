@@ -163,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/background_light"
                 android:fontFamily="monospace"
-                android:text="+ New group"
+                android:text="+ 新增群組 "
                 android:textColor="@color/colorAccent"
                 android:textSize="18sp" />
         </LinearLayout>

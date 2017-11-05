@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:text="is out of "
+            android:text="超出 "
             android:textColor="@color/colorPrimary"
             android:textSize="24sp" />
 
@@ -66,6 +66,6 @@
         android:layout_margin="40dp"
         android:onClick="onBackPressed"
         android:background="@drawable/button_round"
-        android:text="Confirm"
+        android:text="確認"
         android:textColor="@color/colorPrimary" />
 </LinearLayout>
