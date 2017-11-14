@@ -6,54 +6,33 @@ android:layout_height="match_parent"
 android:background="@color/white"
 android:orientation="vertical">
 
-<LinearLayout
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:layout_weight="8"
-android:orientation="horizontal">
-
-<LinearLayout
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:layout_weight="2"
-android:orientation="horizontal">
-
-</LinearLayout>
-
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="5"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:layout_weight="8"
+        android:orientation="horizontal">
 
-        <Switch
-            android:id="@+id/switch3"
+        <ImageButton
+            android:id="@+id/imageButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:backgroundTint="@color/cardview_light_background"
+            android:onClick="openMap"
+            android:scaleType="fitCenter"
+            app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
-            android:layout_weight="1"
-            android:checked="true"
-            android:showText="true"
-            android:text="AR"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display2"
-
-
-            android:textColor="#426EB4"
-            android:textOff="NO"
-            android:textOn="YES"
-            android:textSize="15sp"
-            android:thumb="@drawable/switch_thumb"
-            android:track="@drawable/switch_track" />
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/textView6"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="6"
-            android:orientation="horizontal"></LinearLayout>
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:text="檢視歷史位置"
+            android:textAlignment="textStart"
+            android:textSize="18sp" />
+
     </LinearLayout>
-
-</LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -97,16 +76,26 @@ android:orientation="horizontal">
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_margin="10dp"
             android:gravity="center"
-            android:text="搜尋"
-            android:textColor="@color/colorAccent"
+            android:text="正在搜尋"
 
+            android:textColor="@color/colorAccent"
             android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/bPic"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/beacon" />
 
         <TextView
             android:id="@+id/itemName"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="1"
             android:text="none"
             android:textAlignment="viewStart"

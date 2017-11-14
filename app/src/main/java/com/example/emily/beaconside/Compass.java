@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.icu.math.BigDecimal;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.math.RoundingMode;
 
 
 /**
@@ -38,14 +41,11 @@ public class Compass extends AppCompatActivity implements SurfaceHolder.Callback
     private TextView itemName;
     private TextView itemDistance;
     private TextView itemDegree;
-    /* camera */
-    private ToggleButton cameraBtn;
-    Camera camera;
-    SurfaceView surfaceView;
-    SurfaceHolder surfaceHolder;
-    private final String tag = "VideoServer";
+    private ImageView itemPic;
     /* bluetooth */
     BluetoothMethod bluetooth = new BluetoothMethod();
+
+    String name,address,bPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +53,9 @@ public class Compass extends AppCompatActivity implements SurfaceHolder.Callback
         setContentView(R.layout.activity_search);
         /* intent取得傳遞過來的item名稱 */
         Bundle bundle = this.getIntent().getExtras();
-        String name = bundle.getString("itemName"); // 接受要搜尋的藍牙裝置名稱
-        String address = bundle.getString("itemAddress"); // 接受要搜尋的藍牙裝置地址
+        name = bundle.getString("itemName"); // 接受要搜尋的藍牙裝置名稱
+        address = bundle.getString("itemAddress"); // 接受要搜尋的藍牙裝置地址
+        bPic = bundle.getString("itemPic");
         /* compass */
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);// initialize your android device sensor capabilities
 
@@ -64,39 +65,16 @@ public class Compass extends AppCompatActivity implements SurfaceHolder.Callback
 //        Toast.makeText(getBaseContext(), "開始搜尋"+address, Toast.LENGTH_SHORT).show();
         /* view component */
         image = (ImageView) findViewById(R.id.imageViewCompass);
+        // 設置裝置名稱
         itemName = (TextView) findViewById(R.id.itemName);
         itemName.setText("\""+name+"\"");
         itemDistance = (TextView) findViewById(R.id.itemDistance);
         itemDegree = (TextView) findViewById(R.id.itemDegree);
-        /* camera */
-//        setCamera();
+        String uri = "@drawable/" + bPic; //圖片路徑和名稱
+        int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
+        itemPic = (ImageView) findViewById(R.id.bPic);
+        itemPic.setImageResource(imageResource);
     }
-//
-//    private void setCamera() {
-//        surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
-//        surfaceHolder = surfaceView.getHolder();
-//        surfaceHolder.addCallback(this);
-//        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-//        cameraBtn=  (ToggleButton) findViewById(R.id.toggleButton);
-//        cameraBtn.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                // 當按鈕第一次被點擊時候響應的事件
-//                if (cameraBtn.isChecked()) {
-//                    Toast.makeText(getBaseContext(), "開啟相機", Toast.LENGTH_SHORT).show();
-//                    start_camera();
-////                    surfaceView.setVisibility(View.VISIBLE);
-////                    image.setVisibility(View.GONE);
-//                }
-//                // 當按鈕再次被點擊時候響應的事件
-//                else {
-//                    Toast.makeText(getBaseContext(), "關閉相機", Toast.LENGTH_SHORT).show();
-//                    stop_camera();
-////                    surfaceView.setVisibility(View.GONE);
-////                    image.setVisibility(View.VISIBLE);
-//                }
-//            }
-//        });
-//    }
 
     @Override
     protected void onResume() {
@@ -127,8 +105,8 @@ public class Compass extends AppCompatActivity implements SurfaceHolder.Callback
         double d = bluetooth.getDistance();
         int resID;
         if(bluetooth.getDistance()<100000){ // 如果有收到藍牙裝置訊號的話
-            itemDistance.setText(bluetooth.getDistance() + " cm");
-            itemDegree.setText(degree + " degree");
+            itemDistance.setText(bluetooth.getDistance() + " 公尺");
+//            itemDegree.setText(degree + " degree");
 
             // 判斷遠近來更改顯示圖片
             if(d < 50) {
@@ -176,37 +154,6 @@ public class Compass extends AppCompatActivity implements SurfaceHolder.Callback
         // not in use
     }
 
-    private void start_camera()
-    {
-        try{
-            camera = Camera.open();
-        }catch(RuntimeException e){
-            Log.e(tag, "init_camera: " + e);
-            return;
-        }
-        Camera.Parameters param;
-        param = camera.getParameters();
-        //modify parameter
-        param.setPreviewFrameRate(20);
-        //param.setPreviewSize(176,144);
-//        param.setPreviewFormat();
-        camera.setParameters(param);
-        try {
-            camera.setPreviewDisplay(surfaceHolder);
-            camera.setDisplayOrientation(90);
-            camera.startPreview();
-        } catch (Exception e) {
-            Log.e(tag, "init_camera: " + e);
-            return;
-        }
-    }
-
-    private void stop_camera()
-    {
-        camera.stopPreview();
-        camera.release();
-    }
-
     public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
         // TODO Auto-generated method stub
     }
@@ -233,4 +180,21 @@ public class Compass extends AppCompatActivity implements SurfaceHolder.Callback
         startActivity(backPressedIntent );
         finish();
     }
+
+    public void openMap(View view) {
+        Intent intent = new Intent();
+        intent.setClass(getApplicationContext(), LocationHistory.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("itemName", name);
+        bundle.putString("itemAddress", address);
+        bundle.putString("bPic", bPic);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    public static double round(double value, int places) {
+        double scale = Math.pow(10, places);
+        return Math.round(value * scale) / scale;
+    }
+
 }

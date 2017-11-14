@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Belonging</string>
+    <string name="app_name">Belongings</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -27,4 +27,5 @@
     <string name="title_activity_add_beacon_to_group">addBeaconToGroup</string>
     <string name="title_activity_add_member_to_group">AddMemberToGroup</string>
     <string name="title_activity_edit_group_beacon">EditGroupBeacon</string>
+    <string name="title_activity_location_history">Map</string>
 </resources>

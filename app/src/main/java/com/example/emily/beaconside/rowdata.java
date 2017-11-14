@@ -91,7 +91,7 @@ public class rowdata extends BaseAdapter {
         if(value_deviceDsc.get(position).equals("Out of Range")){
             holder.beaconDistance.setText(value_deviceDsc.get(position));
         }else{
-            holder.beaconDistance.setText(value_deviceDsc.get(position)+" M");
+            holder.beaconDistance.setText(value_deviceDsc.get(position)+" 公尺");
 
         }
         holder.beaconAddress.setText(value_address.get(position));

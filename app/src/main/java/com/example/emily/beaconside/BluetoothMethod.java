@@ -1,22 +1,31 @@
 package com.example.emily.beaconside;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.powenko.ifroglab_bt_lib.*;
 
 import org.json.JSONException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static com.example.emily.beaconside.MainActivity.bName_list;
 import static java.lang.Double.parseDouble;
+import static java.lang.Double.toString;
 import static java.lang.Integer.parseInt;
+import com.example.emily.beaconside.GPSTracker;
 
 public class BluetoothMethod implements ifrog.ifrogCallBack{
 
@@ -46,6 +55,8 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
     public double currentDistance=100000;    // 目前指定要搜尋的特定藍牙裝置之距離
     public String bluetoothFunction = ""; // 目前要使用的藍牙功能
     public String currentItem = "D0:39:72:DE:DC:3A";    // 目前指定要搜尋的特定藍牙裝置
+    public double currentLat, currentLong;
+    GPSTracker gps;
 
     public void getStartSearch(Context context, Long time){
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -73,6 +84,9 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
         mifrog=new ifrog();
         mifrog.setTheListener(this);//設定監聽->CallBack(當有什麼反應會有callback的動作)->新增SearchFindDevicestatus, onDestroy
         mContext = context;
+        gps = new GPSTracker();
+        gps.getCurrentLocation(mContext);
+
         //取得藍牙service，並把這個service交給此有藍芽的設備(BLE)。有些人有藍芽的設備不見得有藍芽的軟體。// Initializes Bluetooth adapter.
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) context.getSystemService(context.BLUETOOTH_SERVICE);
@@ -114,9 +128,9 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
             count ++;
             distanceTotal += result;
         }
-
-        //result = Math.round(result*10)/100;
-        result = Math.rint(result*100)/1000
+        result = result/100; // 換算成公尺
+        result = Math.round(result/0.1)*0.1; // 四捨五入到小數點第一位
+//        result = Math.rint(result*100/1000);
 
         ;
         return result;
@@ -166,8 +180,52 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
         String d="Out of Range";
         for (i=0; i<mac.size(); i++) {
             for(j=0;j<Address.size();j++){
+                // 有搜尋到裝置訊號的話
                 if(mac.get(i).equals(Address.get(j))){
+                    // 該beacon的距離
                     d = String.valueOf(Distance.get(j));
+                    if(gps.isLocationChanged){
+                        final String macAddress = mac.get(i);
+                        final Double latitude = gps.currentLatitude;
+                        final Double longitude = gps.currentLongitude;
+                        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.TAIWAN);
+                        sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
+                        currentLat = gps.currentLatitude;
+                        currentLong = gps.currentLongitude;
+                        // 更改裝置的歷史經緯度
+                        class UpdateBeacon extends AsyncTask<Void,Void,String> {
+
+                            @Override
+                            protected void onPreExecute() {
+                                super.onPreExecute();
+                            }
+
+                            @Override
+                            protected void onPostExecute(String s) {
+                                super.onPostExecute(s);
+
+                            }
+
+                            @Override
+                            protected String doInBackground(Void... params) {
+                                HashMap<String,String> hashMap = new HashMap<>();
+                                hashMap.put("macAddress", macAddress);
+                                hashMap.put("latitude",latitude.toString());
+                                hashMap.put("longitude",longitude.toString());
+                                hashMap.put("time",sdf.format(new Date()));
+                                RequestHandler rh = new RequestHandler();
+                                String s = rh.sendPostRequest(Config.URL_UPDATE_BEACON_LOCATION,hashMap);
+
+                                return s;
+                            }
+                        }
+                        UpdateBeacon ue = new UpdateBeacon();
+                        ue.execute();
+
+//                        Toast.makeText(mContext,macAddress+"經緯度已更改至"+gps.currentLatitude+" "+gps.currentLongitude+"時間"+sdf.format(new Date()), Toast.LENGTH_SHORT).show();
+                        gps.isLocationChanged = false;
+
+                    }
                     break;
                 }
                 else
@@ -180,8 +238,6 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
                 myDeviceDistance.set(i,d);
             }
         }
-//                Toast.makeText(mContext,"myDevice: "+mac, Toast.LENGTH_SHORT).show();
-//                Toast.makeText(mContext,"myDistance: "+myDeviceDistance, Toast.LENGTH_SHORT).show();
     }
 
     public void myItemAlert() {
