@@ -254,7 +254,9 @@ public class GroupSetting extends AppCompatActivity {
                 alert_exit.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         getRequest(Config.URL_EXIT_GROUP, gId+"&uEmail="+uEmail);
-
+                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
 
                     }
                 });
@@ -265,6 +267,7 @@ public class GroupSetting extends AppCompatActivity {
                 });
 
                 alert_exit.show();
+
 
                 break;
 

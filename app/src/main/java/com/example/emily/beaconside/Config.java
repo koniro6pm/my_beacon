@@ -29,6 +29,7 @@ public class Config{
     public static final String URL_UPDATE_BEACON_LOCATION="http://140.117.71.114/beacon/updateBeaconLocation.php";
     public static final String URL_UPDATE_BEACON_DISTANCE="http://140.117.71.114/beacon/updateBeaconDistance.php";
     public static final String URL_DELETE_BEACON="http://140.117.71.114/beacon/deleteBeacon.php?macAddress=";
+    public static final String URL_DELETE_BEACON_FROM_GROUP="http://140.117.71.114/beacon/deleteBeaconFromGroup.php?temp=";
     public static final String URL_CREATE_GROUP = "http://140.117.71.114/beacon/createGroup.php";
     public static final String URL_CREATE_EVENT = "http://140.117.71.114/beacon/createEvent.php";
     public static final String URL_ADD_BEACON_TO_GROUP = "http://140.117.71.114/beacon/addBeaconToGroup.php";

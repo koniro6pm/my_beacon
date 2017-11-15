@@ -58,6 +58,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
 import static java.lang.Integer.parseInt;
 
@@ -534,27 +535,28 @@ public class GroupMain extends AppCompatActivity {
             protected void onPreExecute() {
                 super.onPreExecute();
                 loading = ProgressDialog.show(GroupMain.this, "Updating...", "Wait...", false, false);
+
             }
 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 loading.dismiss();
-                //Toast.makeText(GroupMain.this, s, Toast.LENGTH_LONG).show();
-                getGroupBeacon();
-                bluetooth.mac = macAddress_list;
             }
 
             @Override
             protected String doInBackground(Void... params) {
                 RequestHandler rh = new RequestHandler();
-                String s = rh.sendGetRequestParam(Config.URL_DELETE_BEACON, macAddress);
+                String temp = gId+","+macAddress;
+                String s = rh.sendGetRequestParam(Config.URL_DELETE_BEACON_FROM_GROUP, temp);
                 return s;
             }
         }
 
         DeleteEmployee de = new DeleteEmployee();
         de.execute();
+        finish();
+        startActivity(getIntent());
     }
 
     /* Item setting */
@@ -565,7 +567,7 @@ public class GroupMain extends AppCompatActivity {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle(bName_list.get(info.position));
             /*長按著的選項*/
-            String[] menuItems = new String[]{"Edit","Delete"};
+            String[] menuItems = new String[]{"編輯","從群組刪除"};
             for (int i = 0; i<menuItems.length; i++) {
                 menu.add(Menu.NONE, i, i, menuItems[i]);
             }
@@ -598,8 +600,8 @@ public class GroupMain extends AppCompatActivity {
                 break;
             case "Delete":
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("Delete this Item");
-                alert.setMessage("Do you want to delete "+listItemName+" ?");
+                alert.setTitle("從群組刪除裝置");
+                alert.setMessage("確定要從活動刪除 "+listItemName+" ?");
 
                 alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
