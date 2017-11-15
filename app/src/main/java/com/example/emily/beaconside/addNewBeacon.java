@@ -767,6 +767,8 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                     params.put("nContent",nContent_array.get(0));
                     params.put("nStartTime",nStartTime_array.get(0));
                     params.put("nEndTime",nEndTime_array.get(0));
+                }else{
+                    params.put("nContent","沒有notice");
                 }
 
                 if (switchMode) {
@@ -779,6 +781,9 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
                 params.put("bPic",bPic);
                 params.put("eventIdSelect",eventIdSelect.toString());
                 params.put("groupIdSelect",groupIdSelect.toString());
+
+                params.put("latitude","22.627596");
+                params.put("longitude","120.265768");
 
 
                 RequestHandler rh = new RequestHandler();
