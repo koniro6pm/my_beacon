@@ -173,6 +173,7 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
                 params.put("uEmail",uEmail);
                 params.put("uId",founderId);
                 params.put("friendId",friendId);
+                params.put("gPic",pic);
 
                 //params.put(php檔內的接收變數  $_POST["___"] , 要傳給php檔的java變數)
 

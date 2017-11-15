@@ -43,6 +43,7 @@ public class EditGroupMember extends AppCompatActivity {
     public static final int resultNum = 0;
     public String pic = "groupPic_1";
     ImageView pic_view;
+    String[] GroupMemberId;
 
     //取不到好友信箱 先寫死
     String friendId;
@@ -63,6 +64,12 @@ public class EditGroupMember extends AppCompatActivity {
         gId = extras.getString("gId");
         gName = extras.getString("gName");
         gPic = extras.getString("gPic");
+        GroupMemberId = extras.getStringArray("GroupMemberId");
+
+
+        for(int i = 0 ; i < GroupMemberId.length ; i++){
+            Toast.makeText( EditGroupMember.this,founderId,Toast.LENGTH_SHORT).show();
+        }
 
         listView_memberlist = (ListView)findViewById(R.id.listView_memberlist);
 
@@ -201,40 +208,48 @@ public class EditGroupMember extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_new_item_check) {
-            //執行新增
-            listItemID.clear();
-            friendId=null;
-            for(int i=0;i<adapter.mChecked.size();i++){
-                if(adapter.mChecked.get(i)){
-                    listItemID.add((String) adapter.getItem(i));
-//                                friendId = friendId+","+adapter.getItem(i).toString();
-                }
-            }
-            if(listItemID.size()==0){
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(EditGroupMember.this);
-                builder1.setMessage("None");
-                builder1.show();
-            }else{
-                StringBuilder sb = new StringBuilder();
+        switch(id){
+            case R.id.action_new_item_check:
 
-                for(int i=0;i<listItemID.size();i++){
-//                                sb.append(listItemID.get(i)+",");
-                    if (i==0)
-                        friendId = listItemID.get(i).toString()+",";
-                    else {
-                        friendId = friendId + listItemID.get(i).toString()+",";
+                //執行新增
+                listItemID.clear();
+                friendId=null;
+                for(int i=0;i<adapter.mChecked.size();i++){
+                    if(adapter.mChecked.get(i)){
+                        listItemID.add((String) adapter.getItem(i));
+//                                friendId = friendId+","+adapter.getItem(i).toString();
                     }
                 }
-                friendId = friendId.substring(0,friendId.length() - 1);
+                if(listItemID.size()==0){
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(EditGroupMember.this);
+                    builder1.setMessage("None");
+                    builder1.show();
+                }else{
+                    StringBuilder sb = new StringBuilder();
+
+                    for(int i=0;i<listItemID.size();i++){
+//                                sb.append(listItemID.get(i)+",");
+                        if (i==0)
+                            friendId = listItemID.get(i).toString()+",";
+                        else {
+                            friendId = friendId + listItemID.get(i).toString()+",";
+                        }
+                    }
+                    friendId = friendId.substring(0,friendId.length() - 1);
 //                            sb.append(friendId);
 //                            AlertDialog.Builder builder2 = new AlertDialog.Builder(NewGroup.this);
 //                            builder2.setMessage(sb.toString());
 //                            builder2.show();
-            }
-            addGroupMember();
+                }
+                addGroupMember();
 
-            return true;
+                //return true;
+                break;
+
+            case android.R.id.home:
+                finish();
+                break;
+
         }
 
         return super.onOptionsItemSelected(item);

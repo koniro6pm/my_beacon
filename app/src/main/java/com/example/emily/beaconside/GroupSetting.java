@@ -240,6 +240,7 @@ public class GroupSetting extends AppCompatActivity {
             case R.id.change_photo:
                 // 跳出選擇圖片畫面
 
+
                 //getRequest(Config.URL_UPDATE_GROUP_PHOTO, gId+"&gPic="+gPic);
                 break;
 
