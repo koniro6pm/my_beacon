@@ -98,7 +98,7 @@ public class GPSTracker{
                 String msg = String.format("%f, %f", location.getLatitude(), location.getLongitude());
                 currentLatitude = location.getLatitude();
                 currentLongitude = location.getLongitude();
-//                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 
             } else {
                 // Logger.d("Location is null");

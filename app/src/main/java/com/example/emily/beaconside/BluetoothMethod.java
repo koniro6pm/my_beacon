@@ -222,7 +222,7 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
                         UpdateBeacon ue = new UpdateBeacon();
                         ue.execute();
 
-//                        Toast.makeText(mContext,macAddress+"經緯度已更改至"+gps.currentLatitude+" "+gps.currentLongitude+"時間"+sdf.format(new Date()), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext,macAddress+"經緯度已更改至"+gps.currentLatitude+" "+gps.currentLongitude+"時間"+sdf.format(new Date()), Toast.LENGTH_SHORT).show();
                         gps.isLocationChanged = false;
 
                     }
