@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.emily.beaconside.GroupSetting">
+
+
+    <item android:id="@+id/change_name"
+        app:showAsAction="never"
+        android:icon="@drawable/option"
+        android:title="更改活動名稱" />
+
+    <item android:id="@+id/change_photo"
+        app:showAsAction="never"
+        android:title="更改活動相片" />
+
+
+    <item android:id="@+id/delete_event"
+        app:showAsAction="never"
+        android:title="刪除活動" />
+
+</menu>

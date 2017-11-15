@@ -561,7 +561,7 @@ public class event_beacons extends AppCompatActivity {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle(bName_list.get(info.position));
             /*長按著的選項*/
-            String[] menuItems = new String[]{"Delete"};
+            String[] menuItems = new String[]{"從活動中刪除"};
             for (int i = 0; i<menuItems.length; i++) {
                 menu.add(Menu.NONE, i, i, menuItems[i]);
             }
@@ -596,8 +596,8 @@ public class event_beacons extends AppCompatActivity {
 //                break;
             case "Delete":
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("Delete this Item");
-                alert.setMessage("Do you want to delete "+listItemName+" ?");
+                alert.setTitle("");
+                alert.setMessage("確定要刪除 "+cName+ " 中的 "+listItemName+" 嗎?");
 
                 alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -625,6 +625,7 @@ public class event_beacons extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.refresh, menu);
+        getMenuInflater().inflate(R.menu.group_setting_button, menu);
         return true;
     }
     @Override
@@ -635,10 +636,22 @@ public class event_beacons extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_name) {
-            refresh();
-            return true;
+        switch(id){
+            case R.id.action_name:
+                refresh();
+                break;
+
+            case R.id.setting:
+                Intent intent = new Intent();
+                intent.setClass(event_beacons.this,EventSetting.class);
+                intent.putExtra("cId",cId);
+                intent.putExtra("cName",cName);
+                intent.putExtra("cPic",cPic);
+                startActivity(intent);
+                finish();
+                break;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
