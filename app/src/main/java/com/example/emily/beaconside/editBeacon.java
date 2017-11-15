@@ -121,6 +121,8 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
     EditText notification_content;
 
     boolean edit=false;
+    String new_notice;//用來記錄編輯前notice的狀態
+
     int dateFlag = 0;//0:not setting, 1:start/from, 2:end/to
     int timeFlag = 0;//0:not setting, 1:start/from, 2:end/to
     int dateFromYear, dateFromMonth, dateFromDay;
@@ -965,26 +967,8 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                 super.onPostExecute(s);
                 loading.dismiss();
                 JSON_STRING = s;
-                //Toast.makeText(editBeacon.this,s,Toast.LENGTH_LONG).show();
-                //將取得的json轉換為array list, 顯示在畫面上
-                /*String callback = "{\"result\":[]} ";
-                if(JSON_STRING.equals(callback)){
-                    //沒有notice 編輯模式false
-                    edit = false;
-                    Toast.makeText(editBeacon.this,"edit是false",Toast.LENGTH_LONG).show();
 
-                }else{
-                    //有notcie 編輯模式true
-                    edit = true;
-                    Toast.makeText(editBeacon.this,"edit是true",Toast.LENGTH_LONG).show();
-                    Toast.makeText(editBeacon.this,s+".",Toast.LENGTH_LONG).show();
-                    Toast.makeText(editBeacon.this,callback+"\n.",Toast.LENGTH_LONG).show();
-*/
-
-                    showBeaconNotice();
-
-               // }
-
+                showBeaconNotice();
 
             }
 
@@ -1008,9 +992,11 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             if(result.length() == 0){
                 //Toast.makeText(editBeacon.this,"edit是false",Toast.LENGTH_LONG).show();
                 edit = false;
+                new_notice = "true";//表示這個物品是第一次新增notice
             }else{
                 //Toast.makeText(editBeacon.this,"edit是true",Toast.LENGTH_LONG).show();
                 edit = true;
+                new_notice = "false";
                 for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
                     JSONObject jo = result.getJSONObject(i);
                     int nId = jo.getInt("nId");
@@ -1136,7 +1122,9 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 //loading.dismiss();
+
                 Toast.makeText(editBeacon.this,s, Toast.LENGTH_SHORT).show();
+
 
             }
 
@@ -1166,6 +1154,7 @@ public class editBeacon extends AppCompatActivity implements View.OnClickListene
                     hashMap.put("nContent",nContent_array.get(0));
                     hashMap.put("nStartTime",nStartTime_array.get(0));
                     hashMap.put("nEndTime",nEndTime_array.get(0));
+                    hashMap.put("new_notice",new_notice);
                 }
 
 

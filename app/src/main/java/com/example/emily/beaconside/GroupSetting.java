@@ -1,11 +1,14 @@
 package com.example.emily.beaconside;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,15 +17,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.fourmob.datetimepicker.date.DatePickerDialog;
+import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -192,28 +201,105 @@ public class GroupSetting extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.change_name:
+
                 // 跳出視窗來輸入新名字
-                getRequest(Config.URL_UPDATE_GROUP_NAME,gId+"&gName="+gName);
+
+                final Dialog dialog = new Dialog(GroupSetting.this);
+                dialog.setContentView(R.layout.dialog_edit_group_name);
+                dialog.show();
+
+                final EditText editText_gName;
+                Button button_confirm;
+
+                editText_gName = (EditText)dialog.findViewById(R.id.editText_gName);
+                button_confirm = (Button)dialog.findViewById(R.id.button_confirm);
+
+                editText_gName.setText(gName);
+
+                button_confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        gName = editText_gName.getText().toString().trim();//取得edittext上的字
+                        getRequest(Config.URL_UPDATE_GROUP_NAME,gId+"&gName="+gName);
+
+                        Intent intent = new Intent();
+                        intent.setClass(GroupSetting.this,GroupSetting.class);
+                        intent.putExtra("gId",gId);
+                        intent.putExtra("gName",gName);
+                        intent.putExtra("gPic",gPic);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
+
+
                 break;
             case R.id.change_photo:
                 // 跳出選擇圖片畫面
-                getRequest(Config.URL_UPDATE_GROUP_PHOTO, gId+"&gPic="+gPic);
+
+                //getRequest(Config.URL_UPDATE_GROUP_PHOTO, gId+"&gPic="+gPic);
                 break;
             case R.id.delete_group:
                 // 插入一個警告視窗來確認刪除//
 
-                getRequest(Config.URL_DELETE_GROUP, gId);
-                Intent intent = new Intent();
-                intent.setClass(GroupSetting.this,MainActivity.class);
-                startActivity(intent);
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setTitle("");
+                alert.setMessage("確定要刪除"+gName+" 嗎?");
+
+                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        getRequest(Config.URL_DELETE_GROUP, gId);
+
+                        Intent intent = new Intent();
+                        intent.setClass(GroupSetting.this,MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
+                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+
+                alert.show();
+
                 break;
+
             case R.id.exit_group:
                 // 插入一個警告視窗來確認退出//
-                getRequest(Config.URL_EXIT_GROUP, gId+"&uEmail="+uEmail);
-                intent = new Intent();
-                intent.setClass(GroupSetting.this,MainActivity.class);
-                startActivity(intent);
+
+                AlertDialog.Builder alert_exit = new AlertDialog.Builder(this);
+                alert_exit.setTitle("");
+                alert_exit.setMessage("確定要退出"+gName+" 嗎?");
+
+                alert_exit.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        getRequest(Config.URL_EXIT_GROUP, gId+"&uEmail="+uEmail);
+
+
+                    }
+                });
+
+                alert_exit.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+
+                alert_exit.show();
+
                 break;
+
+            case android.R.id.home:
+                // todo: goto back activity from here
+
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+                return true;
+
             default:
                 break;
         }
@@ -249,5 +335,6 @@ public class GroupSetting extends AppCompatActivity {
         DeleteEmployee de = new DeleteEmployee();
         de.execute();
     }
+
 
 }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.emily.beaconside.EditGroupBeacon">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#fff"
+    android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,22 +21,30 @@
             app:theme="@style/ToolbarColoredBackArrow">
 
             <TextView
-                android:id="@+id/eventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:text="增加共享物品"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
         </android.support.v7.widget.Toolbar>
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="512dp"
-            android:id="@+id/listView_beacon"/>
 
     </android.support.design.widget.AppBarLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:orientation="vertical">
 
-</android.support.design.widget.CoordinatorLayout>
+        <ListView
+            android:id="@+id/listView_beacon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="37dp" />
+
+    </LinearLayout>
+</LinearLayout>

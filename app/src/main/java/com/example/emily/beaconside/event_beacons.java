@@ -14,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -89,6 +90,9 @@ public class event_beacons extends AppCompatActivity {
     public static String uId;
     private String JSON_STRING; //用來接收php檔傳回的json
 
+    public String user_event_json;
+    public String user_group_json;
+
     public static ArrayList<String> bName_list = new ArrayList<String>();//我的beacon名稱list
     ArrayList<String> macAddress_list = new ArrayList<String>();//我的beacon mac list
     ArrayList<String> bPic_list = new ArrayList<String>();//我的beacon 圖片 list
@@ -99,11 +103,14 @@ public class event_beacons extends AppCompatActivity {
     String cPic;
     String cName;
 
+    ImageView imageView_home;
+
     String[] eventId_array;//儲存event id
     String[] eventName_array;//儲存event name
     String[] eventPic_array;//event 圖片
     int[] groupId_array;//儲存group id
     String[] groupName_array;//儲存group name
+    String[] groupPic_array;
 
     /* class main side */
     ListView group_list;
@@ -146,6 +153,8 @@ public class event_beacons extends AppCompatActivity {
         uEmail = sharedPreferences.getString("EMAIL", "YOO@gmail.com");
         uId = sharedPreferences.getString("ID", "1234567890");
         get_uEmail = "\""+uEmail+"\"";
+        user_event_json = sharedPreferences.getString("user_event_json", "1234567890");
+        user_group_json = sharedPreferences.getString("user_group_json", "1234567890");
 
         // 設置SwipeView重整
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_main);
@@ -167,6 +176,8 @@ public class event_beacons extends AppCompatActivity {
         String uri = "@drawable/" + cPic; //圖片路徑和名稱
         int imageResource = getResources().getIdentifier(uri, null, getPackageName()); //取得圖片Resource位子
         pic_view.setImageResource(imageResource);
+
+        imageView_home = (ImageView)findViewById(R.id.imageView_home);
 
         /* class main side */
         group_list = (ListView)findViewById(R.id.group_list);
@@ -276,14 +287,21 @@ public class event_beacons extends AppCompatActivity {
                 });
             }
         });
+
+
+        imageView_home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(event_beacons.this,MainActivity.class);
+                startActivity(intent);
+
+            }
+        });
         getBeacon();
+        showUserEvent();
+        showUserGroup();
 
-
-        sharedPreferences.edit()
-                .putString("NAME", uName)
-                .putString("EMAIL", uEmail)
-                .putString("ID", uId)
-                .apply();
     }
 
     @Override
@@ -401,6 +419,103 @@ public class event_beacons extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+    }
+
+
+    private void showUserEvent() {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(user_event_json);//放入JSON_STRING 即在getBeacno()中得到的json
+            JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
+
+            eventName_array = new String[result.length()];
+            eventId_array = new String[result.length()];
+            eventPic_array = new String[result.length()];
+
+            for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
+                JSONObject jo = result.getJSONObject(i);
+
+                String cId = jo.getString("cId");//取得event id , 由string轉為cId
+                String cName = jo.getString("cName");//取得event名稱
+                String cPic = jo.getString("cPic");
+
+                //Toast.makeText(MainActivity.this, cName, Toast.LENGTH_LONG).show();
+
+                eventId_array[i] = cId;
+                eventName_array[i] = cName;
+                eventPic_array[i]= cPic;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //        Toast.makeText(MainActivity.this, "start"+eventName_list1+" start2:"+eventName_list2, Toast.LENGTH_LONG).show();
+
+        eventName_list= new ArrayList<>(Arrays.asList(eventName_array));//array to arraylist
+        eventId_list= new ArrayList<>(Arrays.asList(eventId_array));//array to arraylist
+        eventPic_list= new ArrayList<>(Arrays.asList(eventPic_array));//array to arraylist
+        adapter_sideList_event = new main_side_event_rowdata(this,eventName_list,eventId_list,eventPic_list);
+        event_list.setAdapter(adapter_sideList_event);
+
+    }
+
+    private void showUserGroup() {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(user_group_json);//放入JSON_STRING 即在getBeacno()中得到的json
+            JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
+
+            groupName_array = new String[result.length()];
+            groupId_array = new int[result.length()];
+            groupPic_array = new String[result.length()];
+
+            for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
+                JSONObject jo = result.getJSONObject(i);
+
+                int gId = parseInt(jo.getString("gId"));//取得event id , 由string轉為cId
+                String gName = jo.getString("gName");//取得event名稱
+                String gPic = jo.getString("gPic");
+
+                groupId_array[i] = gId;
+                groupName_array[i] = gName;
+                groupPic_array[i] = gPic;
+
+                //Toast.makeText(MainActivity.this, gName, Toast.LENGTH_LONG).show();
+
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        groupName_list= new ArrayList<>(Arrays.asList(groupName_array));//array to arraylist
+//        Toast.makeText(MainActivity.this, "start"+groupName_list+"end", Toast.LENGTH_LONG).show();
+        adapter_sideList_group = new ArrayAdapter<String>(event_beacons.this, android.R.layout.simple_list_item_1,groupName_list);
+        group_list.setAdapter(adapter_sideList_group);
+
+        //每個group點進去進入group頁面
+        group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() { //選項按下反應
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                int click_gId = groupId_array[position];//取得選擇beacon的名字
+                String click_gName =  groupName_array[position];//取得選擇beacon的macAddress
+                String click_gPic = groupPic_array[position];
+                //Toast.makeText(MainActivity.this, click_gName, Toast.LENGTH_LONG).show();
+
+                /**換頁到addNewBeacon**/
+                Intent intent = new Intent();
+                intent.setClass(event_beacons.this,GroupMain.class);
+                intent.putExtra("click_gId",click_gId);
+                intent.putExtra("click_gName",click_gName);
+                intent.putExtra("click_gPic",click_gPic);
+                startActivity(intent);
+                finish();
+                /******/
+
+            }
+        });
 
     }
 

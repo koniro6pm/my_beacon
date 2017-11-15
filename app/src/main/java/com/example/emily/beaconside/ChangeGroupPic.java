@@ -22,7 +22,7 @@ public class ChangeGroupPic extends AppCompatActivity {
 
     private GridView gridView;
     private int[] image = {
-            R.drawable.group_pic1_s, R.drawable.group_pic2_s, R.drawable.group_pic3_s, R.drawable.group_pic4_s, R.drawable.group_pic5_s, R.drawable.group_pic6_s, R.drawable.group_pic7_s, R.drawable.group_pic8_s
+            R.drawable.group_pic1_ss, R.drawable.group_pic2_ss, R.drawable.group_pic3_ss, R.drawable.group_pic4_ss, R.drawable.group_pic5_ss, R.drawable.group_pic6_ss, R.drawable.group_pic7_ss, R.drawable.group_pic8_ss
     };
     private String[] imgText = {
             "group_pic1", "group_pic2", "group_pic3", "group_pic4", "group_pic5","group_pic6","group_pic7","group_pic8"

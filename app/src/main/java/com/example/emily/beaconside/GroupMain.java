@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -75,6 +76,7 @@ public class GroupMain extends AppCompatActivity {
     TextView userName;
     TextView textView_groupTitle;
     ImageView pic_view;
+    ImageView imageView_home;
 
 
     BluetoothMethod bluetooth = new BluetoothMethod();
@@ -99,10 +101,12 @@ public class GroupMain extends AppCompatActivity {
     ArrayList<Integer> bAlert_list = new ArrayList<>();
     public int notificationId;
 
-    public String event_json;
-    public String group_json;
-    int[] eventId_array;//儲存event id
+    public String user_event_json;
+    public String user_group_json;
+    String[] eventId_array;//儲存event id
     String[] eventName_array;//儲存event name
+    String[] eventPic_array;//儲存event pic
+
     int[] groupId_array;//儲存group id
     String[] groupName_array;//儲存group name
 
@@ -113,9 +117,9 @@ public class GroupMain extends AppCompatActivity {
     ListView group_list;
     private GridView event_list;
     ArrayList<String> groupName_list;
+    ArrayList<String> eventId_list;
+    ArrayList<String> eventPic_list;
     ArrayList<String> eventName_list;
-    ArrayList<String> eventName_list1 = new ArrayList<String>();
-    ArrayList<String> eventName_list2 = new ArrayList<String>();
     ArrayAdapter<String> adapter_sideList_group;
     main_side_event_rowdata  adapter_sideList_event;
 
@@ -136,9 +140,11 @@ public class GroupMain extends AppCompatActivity {
         uName = sharedPreferences.getString("NAME", "YOO");
         uEmail = sharedPreferences.getString("EMAIL", "YOO@gmail.com");
         uId = sharedPreferences.getString("ID", "1234567890");
-        event_json = sharedPreferences.getString("event_json", "");
-        group_json = sharedPreferences.getString("group_json", "");
         get_uEmail = "\""+uEmail+"\"";
+
+        user_event_json = sharedPreferences.getString("user_event_json", "YOO");
+        user_group_json = sharedPreferences.getString("user_group_json", "YOO");
+
 
         //接收從MainActivity傳遞來的
         Intent intent = this.getIntent();
@@ -237,6 +243,7 @@ public class GroupMain extends AppCompatActivity {
         side_group_ls = (View)findViewById(R.id.side_group_ls);
         chooseGroup = (ImageView)findViewById(R.id.chooseGroup);
         chooseClass = (ImageView)findViewById(R.id.chooseClass);
+        imageView_home = (ImageView)findViewById(R.id.imageView_home);
 
         side_group_bt.setOnClickListener(new View.OnClickListener() {//group
             @Override
@@ -246,11 +253,11 @@ public class GroupMain extends AppCompatActivity {
                 chooseGroup.setVisibility(View.VISIBLE);
                 chooseClass.setVisibility(View.GONE);
 
-                side_new.setText("+ New group");
+                side_new.setText("+ 新增群組");
                 side_new.setOnClickListener(new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(GroupMain.this,"new group Clicked ",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(GroupMain.this,"new group Clicked ",Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent();
                         intent.setClass(GroupMain.this,NewGroup.class);
                         bluetooth.bluetoothStop();
@@ -268,11 +275,11 @@ public class GroupMain extends AppCompatActivity {
                 chooseClass.setVisibility(View.VISIBLE);
                 chooseGroup.setVisibility(View.GONE);
 
-                side_new.setText("+ New Event");
+                side_new.setText("+ 新增活動");
                 side_new.setOnClickListener(new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(GroupMain.this,"new event Clicked ",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(GroupMain.this,"new event Clicked ",Toast.LENGTH_SHORT).show();
                         Intent MainToNewEvent = new Intent();
                         MainToNewEvent.putExtra("uEmail",uEmail);
                         MainToNewEvent.putExtra("bName_list",bName_list);
@@ -287,9 +294,20 @@ public class GroupMain extends AppCompatActivity {
             }
         });
 
+        imageView_home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(GroupMain.this,MainActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
         getGroupBeacon();
-        getUserEvent();
-        getUserGroup();
+        showUserEvent();
+        showUserGroup();
+
     }
 
     @Override
@@ -301,12 +319,12 @@ public class GroupMain extends AppCompatActivity {
         uEmail = sharedPreferences.getString("EMAIL", "0");
         uId = sharedPreferences.getString("ID", "0");
         get_uEmail = "\""+uEmail+"\"";
-        Toast.makeText(this, uName+uEmail+uId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, uName+uEmail+uId, Toast.LENGTH_SHORT).show();
         bluetooth.BTinit(this);
 //        bluetooth.getStartSearchDevice();
         getGroupBeacon();
-        getUserEvent();
-        getUserGroup();
+        showUserEvent();
+        showUserGroup();
         bluetooth.getStartMyItemDistance(macAddress_list);
     }
 
@@ -416,56 +434,28 @@ public class GroupMain extends AppCompatActivity {
 
     }
 
-    private void getUserEvent(){
-        class GetBeacon extends AsyncTask<Void,Void,String> {
-            ProgressDialog loading;
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-//                loading = ProgressDialog.show(MainActivity.this,"Fetching...","Wait...",false,false);
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-//                loading.dismiss();
-                JSON_STRING = s;
-                //Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
-                //將取得的json轉換為array list, 顯示在畫面上
-                showUserEvent();
-
-            }
-
-            @Override
-            protected String doInBackground(Void... params) {
-                RequestHandler rh = new RequestHandler();
-                String s = rh.sendGetRequestParam(Config.URL_GET_USER_EVENT,get_uEmail);
-                return s;
-            }
-        }
-        GetBeacon ge = new GetBeacon();
-        ge.execute();
-    }
-
     private void showUserEvent() {
         JSONObject jsonObject = null;
         try {
-            jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacno()中得到的json
+            jsonObject = new JSONObject(user_event_json);//放入JSON_STRING 即在getBeacno()中得到的json
             JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
 
             eventName_array = new String[result.length()];
-            eventId_array = new int[result.length()];
+            eventId_array = new String[result.length()];
+            eventPic_array = new String[result.length()];
 
             for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
                 JSONObject jo = result.getJSONObject(i);
 
-                int cId = parseInt(jo.getString("cId"));//取得event id , 由string轉為cId
+                String cId = jo.getString("cId");//取得event id , 由string轉為cId
                 String cName = jo.getString("cName");//取得event名稱
+                String cPic = jo.getString("cPic");
 
                 //Toast.makeText(MainActivity.this, cName, Toast.LENGTH_LONG).show();
 
                 eventId_array[i] = cId;
                 eventName_array[i] = cName;
+                eventPic_array[i]= cPic;
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -474,46 +464,17 @@ public class GroupMain extends AppCompatActivity {
         //        Toast.makeText(MainActivity.this, "start"+eventName_list1+" start2:"+eventName_list2, Toast.LENGTH_LONG).show();
 
         eventName_list= new ArrayList<>(Arrays.asList(eventName_array));//array to arraylist
-        adapter_sideList_event = new main_side_event_rowdata(this,eventName_list,null,null);
+        eventId_list= new ArrayList<>(Arrays.asList(eventId_array));//array to arraylist
+        eventPic_list= new ArrayList<>(Arrays.asList(eventPic_array));//array to arraylist
+        adapter_sideList_event = new main_side_event_rowdata(this,eventName_list,eventId_list,eventPic_list);
         event_list.setAdapter(adapter_sideList_event);
 
-    }
-
-    private void getUserGroup(){
-        class GetBeacon extends AsyncTask<Void,Void,String> {
-            ProgressDialog loading;
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-//                loading = ProgressDialog.show(MainActivity.this,"Fetching...","Wait...",false,false);
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-//                loading.dismiss();
-                JSON_STRING = s;
-                //Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
-                //將取得的json轉換為array list, 顯示在畫面上
-                showUserGroup();
-
-            }
-
-            @Override
-            protected String doInBackground(Void... params) {
-                RequestHandler rh = new RequestHandler();
-                String s = rh.sendGetRequestParam(Config.URL_GET_USER_GROUP,get_uEmail);
-                return s;
-            }
-        }
-        GetBeacon ge = new GetBeacon();
-        ge.execute();
     }
 
     private void showUserGroup() {
         JSONObject jsonObject = null;
         try {
-            jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacno()中得到的json
+            jsonObject = new JSONObject(user_group_json);//放入JSON_STRING 即在getBeacno()中得到的json
             JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
 
             groupName_array = new String[result.length()];
@@ -687,6 +648,7 @@ public class GroupMain extends AppCompatActivity {
                 intent.putExtra("gId",Integer.toString(gId));
                 intent.putExtra("gName",gName);
                 intent.putExtra("gPic",gPic);
+                intent.putExtra("involve_macAddress",macAddress_list);
 //            intent.putExtra("gPic",gPic);
                 startActivity(intent);
         }
@@ -732,8 +694,8 @@ public class GroupMain extends AppCompatActivity {
         bluetooth.getStartMyItemDistance(macAddress_list);  // 傳送使用者目前擁有的裝置列表，檢查是否在周圍，如果有的話就會顯示距離
 //        getBeacon();
         bluetooth.mac = macAddress_list;
-        getUserEvent();
-        getUserGroup();
+        showUserEvent();
+        showUserGroup();
         adapter=new GroupMain_beaconAdapter(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,avatar_list,true);//顯示的方式
         listView1.setAdapter(adapter);
         Handler handler = new Handler();

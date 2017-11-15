@@ -170,7 +170,7 @@ public class SearchDevice extends AppCompatActivity implements ifrog.ifrogCallBa
                 Intent intent = new Intent();
                 intent.setClass(SearchDevice.this,addNewBeacon.class);
                 //傳遞變數
-                intent.putExtra("uEmail",uEmail);
+                //intent.putExtra("uEmail",uEmail);
                 intent.putExtra("bName",bName);
                 intent.putExtra("macAddress",macAddress);
                 intent.putExtra("eventName_array",eventName_array);

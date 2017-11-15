@@ -70,10 +70,9 @@ public class main_side_event_rowdata extends BaseAdapter {
                 }
             }
 
-            holder.event_side_bt.setOnLongClickListener(new View.OnLongClickListener() {
+            holder.event_side_bt.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
-
+                public void onClick(View v) {
 
                     Bundle bundle = new Bundle();
 
@@ -84,8 +83,10 @@ public class main_side_event_rowdata extends BaseAdapter {
                     intent.putExtras(bundle);
                     intent.setClass(context, event_beacons.class);
                     context.startActivity(intent);
-                    return true;
+
                 }
+
+
             });
 
 

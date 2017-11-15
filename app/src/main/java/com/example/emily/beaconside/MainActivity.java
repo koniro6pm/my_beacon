@@ -64,7 +64,11 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-    int listItemPositionForPopupMenu;
+
+    //從MainAcitivy取得的SharePreference:
+    //user_beacon_json
+    //user_event_json
+    //user_group_json
 
 
     Context mContext;
@@ -241,11 +245,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 chooseGroup.setVisibility(View.VISIBLE);
                 chooseClass.setVisibility(View.GONE);
 
-                side_new.setText("+ 新群組");
+                side_new.setText("+ 新增群組");
                 side_new.setOnClickListener(new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(MainActivity.this,"new group Clicked ",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this,"new group Clicked ",Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent();
                         intent.setClass(MainActivity.this,NewGroup.class);
                         bluetooth.bluetoothStop();
@@ -263,11 +267,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 chooseClass.setVisibility(View.VISIBLE);
                 chooseGroup.setVisibility(View.GONE);
 
-                side_new.setText("+ 新活動");
+                side_new.setText("+ 新增活動");
                 side_new.setOnClickListener(new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(MainActivity.this,"new event Clicked ",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this,"new event Clicked ",Toast.LENGTH_SHORT).show();
                         Intent MainToNewEvent = new Intent();
                         MainToNewEvent.putExtra("uEmail",uEmail);
                         MainToNewEvent.putExtra("bName_list",bName_list);
@@ -434,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 //將user的event json存到本機
                 sharedPreferences.edit()
-                        .putString("event_json", s)
+                        .putString("user_event_json", s)
                         .apply();
 
                 //Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
@@ -507,7 +511,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 //將user的group存到本機
                 sharedPreferences.edit()
-                        .putString("group_json", s)
+                        .putString("user_group_json", s)
                         .apply();
 
                 //Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
