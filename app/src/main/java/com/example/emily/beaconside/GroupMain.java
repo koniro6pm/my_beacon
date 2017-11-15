@@ -110,6 +110,7 @@ public class GroupMain extends AppCompatActivity {
 
     int[] groupId_array;//儲存group id
     String[] groupName_array;//儲存group name
+    String[] groupPic_array;
 
     public int gId;
     public String gName;
@@ -480,15 +481,18 @@ public class GroupMain extends AppCompatActivity {
 
             groupName_array = new String[result.length()];
             groupId_array = new int[result.length()];
+            groupPic_array = new String[result.length()];
 
             for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
                 JSONObject jo = result.getJSONObject(i);
 
                 int gId = parseInt(jo.getString("gId"));//取得event id , 由string轉為cId
                 String gName = jo.getString("gName");//取得event名稱
+                String gPic = jo.getString("gPic");
 
                 groupId_array[i] = gId;
                 groupName_array[i] = gName;
+                groupPic_array[i] = gPic;
 
                 //Toast.makeText(MainActivity.this, gName, Toast.LENGTH_LONG).show();
 
@@ -510,7 +514,7 @@ public class GroupMain extends AppCompatActivity {
 
                 int click_gId = groupId_array[position];//取得選擇beacon的名字
                 String click_gName =  groupName_array[position];//取得選擇beacon的macAddress
-
+                String click_gPic = groupPic_array[position];
                 //Toast.makeText(GroupMain.this, click_gName, Toast.LENGTH_LONG).show();
 
                 /**換頁到addNewBeacon**/
@@ -518,6 +522,7 @@ public class GroupMain extends AppCompatActivity {
                 intent.setClass(GroupMain.this,GroupMain.class);
                 intent.putExtra("click_gId",click_gId);
                 intent.putExtra("click_gName",click_gName);
+                intent.putExtra("click_gPic",click_gPic);
                 startActivity(intent);
                 finish();
                 /******/

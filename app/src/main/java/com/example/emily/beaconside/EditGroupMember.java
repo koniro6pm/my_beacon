@@ -68,7 +68,7 @@ public class EditGroupMember extends AppCompatActivity {
 
 
         for(int i = 0 ; i < GroupMemberId.length ; i++){
-            Toast.makeText( EditGroupMember.this,founderId,Toast.LENGTH_SHORT).show();
+            //Toast.makeText( EditGroupMember.this,founderId,Toast.LENGTH_SHORT).show();
         }
 
         listView_memberlist = (ListView)findViewById(R.id.listView_memberlist);
