@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.math.BigDecimal;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import com.powenko.ifroglab_bt_lib.*;
 
 import org.json.JSONException;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -128,11 +130,11 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
             count ++;
             distanceTotal += result;
         }
-        result = result/100; // 換算成公尺
-        result = Math.round(result/0.1)*0.1; // 四捨五入到小數點第一位
-//        result = Math.rint(result*100/1000);
+        result = result/10; // 換算成公尺
+        // 四捨五入到小數點第一位
+        DecimalFormat df = new DecimalFormat("##.0");
+        result = Double.parseDouble(df.format(result));
 
-        ;
         return result;
     }
 
@@ -204,6 +206,7 @@ public class BluetoothMethod implements ifrog.ifrogCallBack{
                             protected void onPostExecute(String s) {
                                 super.onPostExecute(s);
 
+//                                Toast.makeText(mContext,s,Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
