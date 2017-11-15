@@ -22,9 +22,12 @@ public class Config{
     public static final String URL_GET_USER_DATABASE = "http://140.117.71.114/beacon/getUserDatabase.php";
     public static final String URL_GET_USER_EVENT="http://140.117.71.114/beacon/getUserCategory.php?uEmail=";
     public static final String URL_GET_USER_GROUP="http://140.117.71.114/beacon/getUserGroup.php?uEmail=";
+    public static final String URL_GET_USER_INFO="http://140.117.71.114/beacon/getUserInfo.php?uEmail=";
     public static final String URL_ADD_USER = "http://140.117.71.114/beacon/addUser.php";
     public static final String URL_SEARCH = "http://140.117.71.114/beacon/search.php";
     public static final String URL_UPDATE_BEACON="http://140.117.71.114/beacon/updateBeacon.php";
+    public static final String URL_UPDATE_BEACON_LOCATION="http://140.117.71.114/beacon/updateBeaconLocation.php";
+    public static final String URL_UPDATE_BEACON_DISTANCE="http://140.117.71.114/beacon/updateBeaconDistance.php";
     public static final String URL_DELETE_BEACON="http://140.117.71.114/beacon/deleteBeacon.php?macAddress=";
     public static final String URL_CREATE_GROUP = "http://140.117.71.114/beacon/createGroup.php";
     public static final String URL_CREATE_EVENT = "http://140.117.71.114/beacon/createEvent.php";
@@ -40,7 +43,6 @@ public class Config{
     public static final String URL_EDIT_GROUP_MEMBER="http://140.117.71.114/beacon/editGroupMember.php?gId=";
     public static final String URL_GET_BEACON_EXCEPT_GROUP="http://140.117.71.114/beacon/showBeaconNotInGroup.php?gId=";
     public static final String URL_EDIT_GROUP_BEACON="http://140.117.71.114/beacon/editGroupBeacon.php";
-
 
     //Keys that will be used to send the request to php scripts
 //    public static final String KEY_EMP_ID = "id";

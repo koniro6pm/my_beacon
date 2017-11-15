@@ -52,6 +52,7 @@ public class GroupSetting extends AppCompatActivity {
     ImageView imageView_gPic;
     TextView textView_gName;
 
+    String[] GroupMemberId;
     ArrayList<String> uName_list = new ArrayList<String>();;//群組會員名字
     ArrayList<String> uId_list = new ArrayList<String>();;//群組會員id
     private LinearLayoutManager linearLayoutManager;
@@ -121,6 +122,7 @@ public class GroupSetting extends AppCompatActivity {
                 intent.putExtra("gId",gId);
                 intent.putExtra("gName",gName);
                 intent.putExtra("gPic",gPic);
+                intent.putExtra("GroupMemberId",GroupMemberId);
                 startActivity(intent);
 
             }
@@ -164,12 +166,14 @@ public class GroupSetting extends AppCompatActivity {
             jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacon()中得到的json
             JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
 
+            GroupMemberId = new String[result.length()];
             for (int i = 0; i < result.length(); i++) {//從頭到尾跑一次array
                 JSONObject jo = result.getJSONObject(i);
 
                 String uId = jo.getString("uId");
                 String uName = jo.getString("uName");
 
+                GroupMemberId[i] = uId;//傳給EditGroupMember用的
 
                 uId_list.add(uId);
                 uName_list.add(uName);
@@ -179,8 +183,6 @@ public class GroupSetting extends AppCompatActivity {
             final RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, uId_list,uName_list);
             //設置分割線使用的divider
             recyclerview_member.setAdapter(adapter);
-
-
 
 
         } catch (JSONException e) {
@@ -239,32 +241,6 @@ public class GroupSetting extends AppCompatActivity {
                 // 跳出選擇圖片畫面
 
                 //getRequest(Config.URL_UPDATE_GROUP_PHOTO, gId+"&gPic="+gPic);
-                break;
-            case R.id.delete_group:
-                // 插入一個警告視窗來確認刪除//
-
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("");
-                alert.setMessage("確定要刪除"+gName+" 嗎?");
-
-                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        getRequest(Config.URL_DELETE_GROUP, gId);
-
-                        Intent intent = new Intent();
-                        intent.setClass(GroupSetting.this,MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-
-                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                });
-
-                alert.show();
-
                 break;
 
             case R.id.exit_group:

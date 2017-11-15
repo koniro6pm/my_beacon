@@ -61,6 +61,9 @@ import org.w3c.dom.Text;
 
 import static java.lang.Integer.parseInt;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -79,7 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     rowdata adapter;
     ArrayAdapter<String> adapterPress;
     TextView userName;
-
+    TextView updateTime;
+    String lastTime = "";
 
     BluetoothMethod bluetooth = new BluetoothMethod();
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -175,7 +179,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         registerForContextMenu(listView1);
-
+        // 上次更新時間
+        updateTime = (TextView) findViewById(R.id.lastTime);
         // 設置側邊欄使用者名稱
         userName = (TextView) findViewById(R.id.name);
         userName.setText("Hi! "+uName);
@@ -288,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getBeacon();
         getUserEvent();
         getUserGroup();
-
+        getUserLastRefresh();
         sharedPreferences.edit()
                 .putString("NAME", uName)
                 .putString("EMAIL", uEmail)
@@ -372,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String bPic = jo.getString("bPic");//取得beacon name
                 String bAlert = jo.getString("alertMiles");//取得beacon的alertMile
                 String isAlert = jo.getString("isAlert");
+                String d = jo.getString("distance");
 
                 //bName,macAddress各自單獨存成一個array
                 bName_list.add(bName);
@@ -384,12 +390,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else
                     bAlert_list.add(100000);
 
-                //distance.add("");//distance先寫死
+                distance.add(d);//distance先寫死
             }
             bluetooth.mac = macAddress_list;
             //上面的資料讀取完  才設置listview
-//            adapter=new rowdata(this,bName_list,distance,macAddress_list,bPic_list,false);//顯示的方式
-            adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,false);//顯示的方式
+            adapter=new rowdata(getBaseContext(),bName_list,distance,macAddress_list,bPic_list,false);//顯示的方式
+//            adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,false);//顯示的方式
 //            adapter=new rowdata(getBaseContext(),bName_list,bluetooth.myDeviceDistance,macAddress_list,bPic_list,true);//顯示的方式
             mergeAdapter.addAdapter(new ListTitleAdapter(this,adapter));
             mergeAdapter.addAdapter(adapter);
@@ -399,6 +405,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String itemName = bName_list.get(position);      //哪一個列表
                     String itemAddress = macAddress_list.get(position);
+                    String itemPic = bPic_list.get(position);
                     Toast.makeText(MainActivity.this, itemName + " selected", Toast.LENGTH_SHORT).show(); //顯示訊號
                     bluetooth.bluetoothFunction="searchItem";
 
@@ -408,6 +415,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Bundle bundle = new Bundle();
                     bundle.putString("itemName", itemName);
                     bundle.putString("itemAddress", itemAddress);
+                    bundle.putString("itemPic",itemPic);
                     intent.putExtras(bundle);
                     bluetooth.bluetoothStop();
                     startActivity(intent);
@@ -759,8 +767,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 listView1.setAdapter(adapter);
             }
         }, 3000);
+        // 取得現在系統時間
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.TAIWAN);
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
         for(int x = 0 ; x < bluetooth.myDeviceDistance.size() ; x++){
             String distance = bluetooth.myDeviceDistance.get(x);
+            // 更新資料庫
+            final String d = distance;
+            final String macAddress = macAddress_list.get(x);
+            // 更改裝置的歷史經緯度
+            class UpdateBeacon extends AsyncTask<Void,Void,String> {
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                }
+
+                @Override
+                protected void onPostExecute(String s) {
+                    super.onPostExecute(s);
+
+                }
+
+                @Override
+                protected String doInBackground(Void... params) {
+                    HashMap<String,String> hashMap = new HashMap<>();
+                    hashMap.put("macAddress", macAddress);
+                    hashMap.put("distance", d);
+                    hashMap.put("lastTime",sdf.format(new Date()));
+                    hashMap.put("uEmail",uEmail);
+                    RequestHandler rh = new RequestHandler();
+                    String s = rh.sendPostRequest(Config.URL_UPDATE_BEACON_DISTANCE,hashMap);
+                    return s;
+                }
+            }
+//            Toast.makeText(getBaseContext(), uEmail+"距離"+d, Toast.LENGTH_SHORT).show();
+            UpdateBeacon ue = new UpdateBeacon();
+            ue.execute();
+
+
             if(!(distance.equals("Out of Range"))){
                 //如果這個beacon的距離不是out of range(表示有搜尋到)
                 //就傳給getNotice這顆beacon的mac
@@ -770,11 +815,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }else{
                 // do nothing
             }
-
-            //Toast.makeText(getBaseContext(),bName_list.get(x)+"距離"+bluetooth.myDeviceDistance.get(x), Toast.LENGTH_SHORT).show();
-
-
         }
+        updateTime.setText("剛剛");
     }
 
     //從資料庫取得指定beacon的notice
@@ -942,5 +984,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         canvas.drawBitmap(bitmap, null, rect, paint);
         //返回已经绘画好的backgroundBmp
         return backgroundBmp;
+    }
+
+    private void getUserLastRefresh(){
+        class GetBeacon extends AsyncTask<Void,Void,String> {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                JSON_STRING = s;
+                //將取得的json轉換為array list, 顯示在畫面上
+                showUserLastRefresh();
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                RequestHandler rh = new RequestHandler();
+                String s = rh.sendGetRequestParam(Config.URL_GET_USER_INFO,get_uEmail);
+                return s;
+            }
+        }
+        GetBeacon ge = new GetBeacon();
+        ge.execute();
+    }
+
+    private void showUserLastRefresh() {
+        JSONObject jsonObject = null;
+
+        try {
+            jsonObject = new JSONObject(JSON_STRING);//放入JSON_STRING 即在getBeacno()中得到的json
+            JSONArray result = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);//轉換為array
+            for(int i = 0; i<result.length(); i++){//從頭到尾跑一次array
+                JSONObject jo = result.getJSONObject(i);
+                lastTime= jo.getString("lastTime");//取得macAddress
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = sdf.parse(lastTime);
+                    updateTime.setText(RelativeDateFormat.format(date));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 }

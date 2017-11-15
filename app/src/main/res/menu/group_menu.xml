@@ -15,9 +15,6 @@
         app:showAsAction="never"
         android:title="更改群組相片" />
 
-    <item android:id="@+id/delete_group"
-        app:showAsAction="never"
-        android:title="刪除群組" />
 
     <item android:id="@+id/exit_group"
         app:showAsAction="never"
