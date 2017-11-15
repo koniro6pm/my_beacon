@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -95,6 +96,7 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
     String uEmail = "sandy@gmail.com";
     String get_uEmail = "\"sandy@gmail.com\"";
 
+    SharedPreferences sharedPreferences;
     /* time */
     public static final String DATEPICKER_TAG = "datepicker";
     public static final String TIMEPICKER_TAG = "timepicker";
@@ -140,10 +142,14 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        uEmail = sharedPreferences.getString("EMAIL", "YOO@gmail.com");
+        get_uEmail = "\""+uEmail+"\"";
+
         /**接收從SearchDevice傳過來的變數**/
         Intent intent = this.getIntent();
         Bundle extra = intent.getExtras();
-        uEmail = intent.getStringExtra("uEmail");
+        //uEmail = intent.getStringExtra("uEmail");
         bName = intent.getStringExtra("bName");
         macAddress = intent.getStringExtra("macAddress");
         eventName_array = extra.getStringArray("eventName_array");
@@ -741,7 +747,7 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
 //                loading.dismiss();
-//                Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
+               Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
 
                 /*Intent intent = new Intent();
                 intent.setClass(addNewBeacon.this,MainActivity.class);

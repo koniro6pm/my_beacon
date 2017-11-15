@@ -71,7 +71,7 @@ public class EditGroupBeacon extends AppCompatActivity {
         gId = extras.getString("gId");
         gName = extras.getString("gName");
         gPic = extras.getString("gPic");
-        Toast.makeText(EditGroupBeacon.this ,gId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(EditGroupBeacon.this ,gId, Toast.LENGTH_SHORT).show();
 
 
         listView_beacon = (ListView)findViewById(R.id.listView_beacon);
