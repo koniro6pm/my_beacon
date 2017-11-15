@@ -235,6 +235,12 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if(item.getItemId() == android.R.id.home){
+            finish();
+            return true;
+        }
+
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_new_item_check) {
             //執行新增group
@@ -277,6 +283,7 @@ public class NewGroup extends AppCompatActivity implements View.OnClickListener 
 
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

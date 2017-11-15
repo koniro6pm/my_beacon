@@ -734,14 +734,14 @@ public class addNewBeacon extends AppCompatActivity implements View.OnClickListe
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                //loading = ProgressDialog.show(addNewBeacon.this,"Adding...","Wait...",false,false);
+//                loading = ProgressDialog.show(addNewBeacon.this,"Adding...","Wait...",false,false);
             }
 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                //loading.dismiss();
-                //Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
+//                loading.dismiss();
+//                Toast.makeText(addNewBeacon.this,s,Toast.LENGTH_LONG).show();
 
                 /*Intent intent = new Intent();
                 intent.setClass(addNewBeacon.this,MainActivity.class);

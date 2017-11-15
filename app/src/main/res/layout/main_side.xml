@@ -15,13 +15,10 @@
 
         <TextView
             android:id="@+id/name"
-            android:layout_width="238dp"
-            android:layout_height="39dp"
-            android:layout_gravity="bottom"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:padding="10dp"
             android:text="Hi"
             android:textAlignment="center"
             android:textColor="@color/colorAccent"
@@ -33,10 +30,10 @@
 
         <ImageView
             android:id="@+id/userPicture"
-            android:layout_width="376dp"
-            android:layout_height="116dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
             android:layout_marginTop="32dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -45,8 +42,8 @@
 
         <ImageView
             android:id="@+id/imageView_home"
-            android:layout_width="28dp"
-            android:layout_height="34dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
@@ -58,17 +55,6 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-
-        android:orientation="vertical">
-
-        <!--使用者頭貼和資訊-->
-
-    </LinearLayout>
-
     <!--下層-->
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,9 +64,11 @@
         <!--選單/分類-->
         <!--android:background="@drawable/side_title_bg"-->
         <LinearLayout
-            android:layout_width="252dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
             android:orientation="horizontal"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
             android:weightSum="1">
             <!--
                 android:layout_width="0dp"
@@ -88,22 +76,22 @@
                 android:layout_weight="0.5"-->
             <Button
                 android:id="@+id/side_group_bt"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:layout_weight="0.5"
-                android:background="@drawable/people1" />
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:background="@drawable/people1"
+                android:backgroundTint="@color/colorMedium" />
 
 
             <Button
                 android:id="@+id/side_class_bt"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:layout_weight="0.5"
-                android:background="@drawable/folder1" />
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:background="@drawable/folder1"
+                android:backgroundTint="@color/colorMedium" />
             <!--android:backgroundTint="@drawable/side_title_bg"-->
         </LinearLayout>
 
@@ -117,7 +105,7 @@
             <!--會動的線線-->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="2dp"
                 android:orientation="horizontal"
                 android:weightSum="1">
 
